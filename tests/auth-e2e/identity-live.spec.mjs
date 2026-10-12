@@ -171,7 +171,7 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
       { timeout: 35_000 },
     );
     await login(page, adminUsername, originalPassword);
-    await expect(page).toHaveURL(/\\/akun$/);
+    await expect(page).toHaveURL(/\/akun$/);
     await firstRefresh;
     assert.ok(refreshCount >= 1, 'GoTrue must actually rotate an in-memory refresh token');
     await expect(page.getByRole('heading', { name: 'Halo, ' + adminUsername })).toBeVisible();
@@ -189,7 +189,7 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
         method: 'PATCH', body: { active: false },
       });
     assert.equal(stopped.ok, true);
-    await expect(page).toHaveURL(/\\/login$/, { timeout: 40_000 });
+    await expect(page).toHaveURL(/\/login$/, { timeout: 40_000 });
     await expect(page.getByRole('heading', { name: 'Masuk ke LayarBelajar' })).toBeVisible();
   });
 
