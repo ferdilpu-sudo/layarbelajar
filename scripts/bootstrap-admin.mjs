@@ -7,23 +7,33 @@ function readSecret(prompt) {
       reject(new Error('Secure password prompt needs interactive terminal.'));
       return;
     }
-    stdout.write(prompt);
     let secret = '';
     stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
-    const handle = (char) => {
-      if (char === '\u0003') {
-        cleanup();
-        reject(new Error('Cancelled'));
-      } else if (char === '\r' || char === '\n') {
-        cleanup();
-        stdout.write('\n');
-        resolve(secret);
-      } else if (char === '\u007f') {
-        secret = secret.slice(0, -1);
-      } else if (/^[\x20-\x7e]$/.test(char)) {
-        secret += char;
+    let complete = false;
+    // Terminal input may arrive as one pasted chunk, not one event per character.
+    const handle = (chunk) => {
+      for (const char of chunk) {
+        if (complete) return;
+        if (char === '\u0003') {
+          complete = true;
+          cleanup();
+          reject(new Error('Cancelled'));
+          return;
+        }
+        if (char === '\r' || char === '\n') {
+          complete = true;
+          cleanup();
+          stdout.write('\n');
+          resolve(secret);
+          return;
+        }
+        if (char === '\u007f') {
+          secret = secret.slice(0, -1);
+        } else if (/^[\x20-\x7e]$/.test(char)) {
+          secret += char;
+        }
       }
     };
     function cleanup() {
@@ -32,6 +42,8 @@ function readSecret(prompt) {
       stdin.pause();
     }
     stdin.on('data', handle);
+    // Only display the prompt after the terminal is in raw mode and listening.
+    stdout.write(prompt);
   });
 }
 
