@@ -22,7 +22,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/m002-auth-profile-foundation'
         run: |
           npm run format
-          git add -u
+          git add -u -- ':!.github/workflows/*.yml'
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

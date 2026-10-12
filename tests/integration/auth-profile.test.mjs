@@ -40,7 +40,7 @@ async function createUser(username, { role = 'student', pending = false, createP
     local.url, local.anonKey, '/auth/v1/token?grant_type=password',
     { method: 'POST', body: { email: alias, password } },
   );
-  assert.equal(session.ok, true, 'Username alias/password login should succeed');
+  assert.equal(session.ok, true, 'Username alias/password login failed: HTTP ' + session.status + ', code=' + String(session.data?.code ?? session.data?.error_code ?? 'unknown'));
   assert.ok(session.data?.access_token, 'Expected Auth access token');
   return { id, accessToken: session.data.access_token, alias };
 }
