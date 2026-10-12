@@ -13,7 +13,7 @@ def main():
         return 2
     username = sys.argv[1]
     # The secret is delivered through private stdin, not command arguments or env.
-    secret = sys.stdin.buffer.readline().rstrip(b"\\r\\n")
+    secret = sys.stdin.buffer.readline().rstrip(b"\r\n")
     if len(secret) < 12:
         return 2
     pid, master = pty.fork()
@@ -38,7 +38,7 @@ def main():
                 text.extend(chunk)
                 if not sent and b"Password admin (12+ characters, hidden):" in text:
                     sent = True
-                    os.write(master, secret + b"\\r")
+                    os.write(master, secret + b"\r")
             waited, status = os.waitpid(pid, os.WNOHANG)
             if waited:
                 code = os.waitstatus_to_exitcode(status)

@@ -67,7 +67,7 @@ test(
           resolve(transcript);
         }
       });
-      child.stdin.end(password + '\\n');
+      child.stdin.end(password + '\n');
     });
     assert.equal(output.includes(password), false, 'Password must not be echoed');
     assert.ok(output.includes('BOOTSTRAP_PTY_OK'), 'Bootstrap should succeed');
