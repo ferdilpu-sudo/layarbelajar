@@ -77,3 +77,13 @@ export async function refreshIdentity(token: string): Promise<AuthIdentity> {
     throw new Error('Status akun tidak tersedia.');
   return value;
 }
+
+/** Best-effort server-side refresh-token revocation; memory tokens are cleared immediately. */
+export async function revokeSession(token: string): Promise<void> {
+  const { url, key } = configuration();
+  await fetch(url + '/auth/v1/logout', {
+    method: 'POST',
+    headers: { apikey: key, Authorization: 'Bearer ' + token },
+    cache: 'no-store',
+  });
+}

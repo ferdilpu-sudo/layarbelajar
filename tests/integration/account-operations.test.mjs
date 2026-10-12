@@ -115,6 +115,17 @@ test('TASK-007 local protected account operations (real Auth + Edge + RLS)', asy
     teacher.token = login.data?.access_token;
   });
 
+  await t.test('only admin may list teacher/student accounts', async () => {
+    const forbidden = await edge('account-admin', student.token, { action: 'list' });
+    assert.equal(forbidden.status, 403);
+    const listed = await edge('account-admin', admin.token, { action: 'list' });
+    assert.equal(listed.status, 200);
+    const teacherRecord = listed.data?.data?.items?.find((item) => item.id === teacher.id);
+    assert.equal(teacherRecord?.username, username('teacher'));
+    assert.equal(teacherRecord?.role, 'teacher');
+    assert.ok(!JSON.stringify(teacherRecord).includes('temporary_password'));
+  });
+
   await t.test(
     'pending teacher cannot access data but may inspect own password requirement',
     async () => {

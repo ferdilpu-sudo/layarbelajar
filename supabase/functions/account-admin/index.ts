@@ -7,6 +7,11 @@ Deno.serve(async (req: Request) => {
     await identify(req, true);
     const input = await bodyObject(req);
     const action = input.action;
+    if (action === 'list') {
+      const records = await backend('/rest/v1/profiles?select=id,username,display_name,role,active,must_change_password&role=in.(teacher,student)&order=created_at.desc&limit=50', { service: true });
+      if (!records.ok) throw new HttpFailure(500, 'INTERNAL_ERROR', 'Daftar akun tidak tersedia.');
+      return reply(req, 200, { data: { items: Array.isArray(records.data) ? records.data : [] } });
+    }
     if (action === 'provision') {
       const username = normalizedUsername(input.username);
       const displayName = input.display_name;

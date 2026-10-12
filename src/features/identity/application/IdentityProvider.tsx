@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { signIn, type Session } from '../infrastructure/accountApi';
+import { revokeSession, signIn, type Session } from '../infrastructure/accountApi';
 
 type IdentityContextValue = {
   session: Session | null;
@@ -19,7 +19,11 @@ export function IdentityProvider({ children }: { children: ReactNode }) {
         session,
         login: async (username, password) => setSession(await signIn(username, password)),
         updateSession: setSession,
-        logout: () => setSession(null),
+        logout: () => {
+          const token = session?.accessToken;
+          setSession(null);
+          if (token) void revokeSession(token).catch(() => { /* no token remains in client state */ });
+        },
       }}
     >
       {children}
