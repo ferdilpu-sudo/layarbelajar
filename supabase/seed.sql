@@ -1,0 +1,3 @@
+-- No real or synthetic passwords are persisted in SQL seed files.
+-- TASK-006 integration tests create ephemeral Auth accounts via the local Admin API
+-- and delete them in cleanup. Admin bootstrap is an explicit owner-only local action.

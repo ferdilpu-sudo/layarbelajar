@@ -1,6 +1,6 @@
 # Rencana Implementasi — LayarBelajar
 
-Status per 12 Oktober 2026: **M-001 Verified (fondasi + katalog fixture)** berdasarkan CI dan review screenshot; **M-002–M-007 Not started**. Verifikasi ini BUKAN klaim autentikasi, Supabase, katalog DB, kelas, penilaian, IFP nyata, atau produksi sudah tersedia. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
+Status per 12 Oktober 2026: **M-001 Verified (fondasi + katalog fixture)** berdasarkan CI dan review screenshot; **M-002 In progress / TASK-006**; M-003–M-007 Not started. Verifikasi ini BUKAN klaim autentikasi, Supabase, katalog DB, kelas, penilaian, IFP nyata, atau produksi sudah tersedia. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
 
 ## Milestone dan gate
 
@@ -94,3 +94,21 @@ TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state,
 - **Lingkup bukti**: TEST-001 sebagian **PASS pada katalog fixture saja**; tidak ada RLS/DB. TEST-014 sebagian **PASS pada komponen/shell M-001**; layout layar admin/IFP/hasil, touch real-device, dan cetak LKPD nyata masih **NOT RUN**. Tidak ada klaim seluruh REQ/AC/TEST production complete.
 - Risiko operasional: login dan gabung tetap placeholder; backend, akun, data nyata, Storage, restore, dan deployment belum dikerjakan. Fitur dev fixture `/__ui` tersedia hanya saat `import.meta.env.DEV`; tidak ditautkan di navigasi.
 - **Next: M-002 / TASK-006**. Mulai Supabase lokal, migrasi `profiles` dan peran, bootstrap admin, uji username alias `@accounts.invalid` dengan Auth sesungguhnya dan RLS negatif. Jika Docker/Supabase local tidak tersedia, sediakan migrasi dan test tanpa memalsukan PASS integrasi. Jangan meminta kredensial lewat chat.
+
+## M-002 / TASK-006 — checkpoint 12 Oktober 2026 (branch `feat/m002-auth-profile-foundation`)
+
+- Baseline `main`: `ef129427509ce0ab0638aaf599f6c3b89263164c`; M-001 Verified dan tidak diubah.
+- TASK-006 **In progress**: menambahkan `supabase/config.toml` untuk proyek lokal tanpa self-signup, migrasi `profiles` / `app_role` / grants / deny-by-default RLS / helper di schema private, serta seed tanpa password. Username alias `@accounts.invalid` divalidasi oleh domain helper.
+- Bootstrap admin lokal: `scripts/bootstrap-admin.mjs`, password tersembunyi lewat terminal, membuat Auth user dan profile dari service role lokal, menghapus Auth user jika penyimpanan profile gagal. Tidak ada endpoint bootstrap publik.
+- `tests/integration/auth-profile.test.mjs` memakai akun sintetis acak sementara, Auth nyata dan REST ber-JWT user, mencakup login alias, signup disabled, pemisahan role, mutasi terlarang, akun Auth yatim, must-change-password, dan deaktivasi token lama. Terdapat workflow CI `backend.yml` untuk Docker/Supabase lokal. **Hasil belum diverifikasi pada saat commit awal**; status TEST-002 tetap NOT RUN sampai job benar-benar lulus.
+- TASK-007 (provision/reset/deactivate/change-password Edge Functions + UI) **Not started**. M-002 **Not Verified** dan belum ada koneksi Supabase produksi. Jangan mengubah domain alias jika spike gagal; laporkan hasil dan alternatif keputusan pemilik.
+- Kunci service role tidak pernah dikomit dan tidak boleh masuk prefiks `VITE_`. `supabase db reset --local` hanya untuk DB development; dilarang menjalankan reset pada proyek cloud.
+
+### TASK-006 — bukti integrasi 12 Oktober 2026 (checkpoint setelah perbaikan)
+
+- GitHub Actions [run 38212349563](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38212349563) **PASS**: Supabase CLI 2.84.2 menjalankan stack lokal, menerapkan migrasi pada `start`, kemudian `supabase db reset --local` sukses pada DB bersih. Node integration dengan GoTrue + PostgREST asli: **9 PASS / 0 FAIL**.
+- Login username alias `@accounts.invalid` terbukti bekerja **pada Auth lokal** melalui Admin API create-user (email_confirm true) dan password grant. Self-signup HTTP ditolak, profil orang lain tidak terbaca, insert/update/delete `profiles` ditolak bagi JWT siswa, akun orphan tidak mendapat akses, must-change-password dan deactivate menyembunyikan profil bahkan dengan JWT yang telah diterbitkan.
+- Konfigurasi benar: `[auth].enable_signup=false` menutup pendaftaran publik; `[auth.email].enable_signup=true` tetap mengaktifkan provider login email/password. Provider false sebelumnya menyebabkan kegagalan login. Lihat [Supabase issue #40582](https://github.com/supabase/supabase/issues/40582).
+- [Foundation CI run 38212576937](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38212576937) PASS (format/lint/type/unit/build/browser). Setelah finalisasi dokumen, PR akan dicek lagi.
+- **TASK-006 code + Auth/RLS spike PASS**; bootstrap admin dari terminal interaktif belum diuji manual dan harus diperiksa saat tersedia terminal Windows lokal. **TASK-007 belum dimulai**, M-002 **IN PROGRESS / NOT VERIFIED**. Tidak ada koneksi Auth hosted, tidak ada akun produksi. Jangan mempromosikan status TEST-002 keseluruhan menjadi PASS.
+- Selanjutnya: TASK-007 Edge Functions untuk provision/reset/deactivate/change-password dengan transaksi kompensasi, gate akses server, lalu UI peran dan RLS negatif end-to-end.

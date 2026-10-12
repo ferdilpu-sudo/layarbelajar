@@ -1,0 +1,26 @@
+# Local-only Supabase configuration. No service keys/passwords belong here.
+project_id = "layarbelajar"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:5173"
+additional_redirect_urls = []
+jwt_expiry = 3600
+enable_signup = false
+
+# Keep the email/password provider enabled for admin-created users.
+# [auth].enable_signup=false blocks self-registration globally.
+[auth.email]
+enable_signup = true
+enable_confirmations = false

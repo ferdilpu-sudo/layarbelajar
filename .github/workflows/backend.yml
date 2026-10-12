@@ -1,0 +1,36 @@
+name: M-002 Supabase Local Auth
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - 'tests/integration/**'
+      - 'scripts/local-supabase-env.mjs'
+      - 'scripts/bootstrap-admin.mjs'
+      - '.github/workflows/backend.yml'
+      - 'package.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.84.2
+      - name: Start isolated local Supabase (no remote keys)
+        run: supabase start
+      - name: Reapply clean migrations locally
+        run: supabase db reset --local
+      - name: Auth alias and RLS negative integration checks
+        run: npm run test:integration
+      - name: Stop local development containers
+        if: always()
+        run: supabase stop --no-backup || true

@@ -8,3 +8,9 @@ test-results/
 !.env.example
 *.local
 .DS_Store
+
+# Supabase local generated files
+supabase/.temp/
+supabase/.branches/
+supabase/.profiles/
+supabase/.env

@@ -160,3 +160,11 @@ Commit `package-lock.json` setelah `npm install`, dan ubah CI agar menggunakan `
 Fondasi diuji pada [CI run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678): npm ci, dependency audit 0 temuan, format, lint, TypeScript, 3 unit tests, kontras token, build dan 20 Playwright E2E PASS. Screenshot visual empat viewport sudah ditinjau, bukan baseline yang auto-approved melalui perubahan buta. Fixture state komponen tersedia pada `/__ui` **hanya dalam mode development**; rute produksi mengembalikan not-found.
 
 M-001 Verified **tidak** menutup keseluruhan TEST-001/014: Supabase/RLS belum dibangun, dan layar admin, game/IFP, LKPD/print nyata serta perangkat aktual masih harus dites pada milestone masing-masing. Mulai TASK-006 dengan Supabase lokal, akun username alias dan migrasi role/RLS tanpa menambahkan email pribadi siswa secara sepihak.
+
+### M-002: memulai backend lokal (TASK-006)
+
+M-002 **In progress** di branch `feat/m002-auth-profile-foundation`. Siapkan Docker dan Supabase CLI versi yang direkam di workflow (`2.84.2`), jalankan `supabase start`, `supabase db reset --local`, lalu `npm run test:integration`. Kode migrasi dan test memakai Supabase lokal sungguhan, bukan backend cloud atau akun siswa nyata. Jika pengguna ingin mem-bootstrap admin lokal: `npm run bootstrap:admin -- <username> "<display name>"` lalu input password 12+ karakter secara tersembunyi di terminal. Jangan pernah memasukkan password ke argumen atau commit.
+
+**TASK-007 belum dikerjakan**: integrasi login UI, Edge Functions provisioning/reset/deaktivasi/ganti password, dan RLS pada seluruh tabel modul berikut. Status ujinya dilacak di `plan.md`/`testing.md`; aplikasi belum siap dipakai kelas.
+
+**Update TASK-006:** GoTrue + PostgREST lokal benar-benar diuji dan **9/9 integrasi PASS** pada [CI run 38212349563](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38212349563). Konfigurasi local Auth mematikan signup global tetapi mempertahankan provider email/password aktif; alias `@accounts.invalid` berhasil digunakan pada login. Ini belum login aplikasi melalui UI, belum Auth cloud, dan belum selesai M-002. Langkah berikutnya TASK-007 serta verifikasi CLI bootstrap admin pada terminal yang aman.
