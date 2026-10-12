@@ -32,62 +32,31 @@ test(
       }
     });
     const output = await new Promise((resolve, reject) => {
-      // Only username and display name are command args. The password is written
-      // AFTER the script's hidden terminal prompt; never exported to args/env/logs.
-      const child = spawn(
-        'script',
-        [
-          '-q',
-          '-e',
-          '-c',
-          'node scripts/bootstrap-admin.mjs ' + name + ' "Admin Uji Lokal"',
-          '/dev/null',
-        ],
-        { stdio: ['pipe', 'pipe', 'pipe'] },
-      );
+      // Python's standard-library PTY driver owns the terminal directly.
+      // The generated secret enters only through its stdin pipe, never argv/env/logs.
+      const child = spawn('python3', ['scripts/test-bootstrap-pty.py', name], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
       let transcript = '';
-      let answered = false;
       const timeout = setTimeout(() => {
         child.kill('SIGKILL');
-        reject(
-          new Error(
-            'Bootstrap interactive prompt timed out. Sanitized child output: ' +
-              transcript.replaceAll(password, '[REDACTED]').slice(-480),
-          ),
-        );
-      }, 16_000);
-      child.stdout.on('data', (data) => {
-        transcript += data.toString();
-        if (!answered && transcript.includes('Password admin (12+ characters, hidden):')) {
-          answered = true;
-          child.stdin.write(password + '\n');
-        }
-      });
-      child.stderr.on('data', (data) => {
-        transcript += data.toString();
-      });
-      child.on('error', (error) => {
-        clearTimeout(timeout);
-        reject(error);
-      });
+        reject(new Error('Bootstrap PTY driver timed out'));
+      }, 23_000);
+      child.stdout.on('data', (data) => { transcript += data.toString(); });
+      child.stderr.on('data', (data) => { transcript += data.toString(); });
+      child.on('error', (error) => { clearTimeout(timeout); reject(error); });
       child.on('close', (code) => {
         clearTimeout(timeout);
-        if (code !== 0 || !answered) {
-          reject(
-            new Error(
-              'Bootstrap failed with status ' +
-                String(code) +
-                ', diagnostic: ' +
-                transcript.replaceAll(password, '[REDACTED]').slice(-480),
-            ),
-          );
+        if (code !== 0 || !transcript.includes('BOOTSTRAP_PTY_OK')) {
+          reject(new Error('Bootstrap PTY failed, status ' + String(code) + ', diagnostic: ' + transcript.replaceAll(password, '[REDACTED]').slice(-220)));
         } else {
           resolve(transcript);
         }
       });
+      child.stdin.end(password + '\\n');
     });
     assert.equal(output.includes(password), false, 'Password must not be echoed');
-    assert.ok(output.includes('Local admin bootstrapped successfully'), 'Bootstrap should succeed');
+    assert.ok(output.includes('BOOTSTRAP_PTY_OK'), 'Bootstrap should succeed');
     const profile = await localRequest(
       env.url,
       env.serviceKey,
