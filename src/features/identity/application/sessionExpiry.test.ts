@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { PROFILE_RECHECK_MS, REFRESH_EARLY_MS, shouldRenew, shouldRevalidate } from './sessionExpiry';
+import {
+  PROFILE_RECHECK_MS,
+  REFRESH_EARLY_MS,
+  shouldRenew,
+  shouldRevalidate,
+} from './sessionExpiry';
 
 describe('in-memory session lifecycle rules', () => {
   it('renews near expiry or already expired', () => {

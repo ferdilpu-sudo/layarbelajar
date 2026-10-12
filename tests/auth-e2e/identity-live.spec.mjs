@@ -181,16 +181,23 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     }));
     assert.deepEqual(browserStorage, { local: 0, session: 0 });
 
-    const profile = await localRequest(env.url, env.serviceKey,
-      '/rest/v1/profiles?username=eq.' + adminUsername + '&select=id');
+    const profile = await localRequest(
+      env.url,
+      env.serviceKey,
+      '/rest/v1/profiles?username=eq.' + adminUsername + '&select=id',
+    );
     assert.equal(profile.data?.length, 1);
-    const stopped = await localRequest(env.url, env.serviceKey,
-      '/rest/v1/profiles?id=eq.' + profile.data[0].id, {
-        method: 'PATCH', body: { active: false },
-      });
+    const stopped = await localRequest(
+      env.url,
+      env.serviceKey,
+      '/rest/v1/profiles?id=eq.' + profile.data[0].id,
+      {
+        method: 'PATCH',
+        body: { active: false },
+      },
+    );
     assert.equal(stopped.ok, true);
     await expect(page).toHaveURL(/\/login$/, { timeout: 40_000 });
     await expect(page.getByRole('heading', { name: 'Masuk ke LayarBelajar' })).toBeVisible();
   });
-
 });

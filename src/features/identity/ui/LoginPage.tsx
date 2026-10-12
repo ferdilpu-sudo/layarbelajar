@@ -57,7 +57,8 @@ export function LoginPage() {
           </Button>
         </form>
         <p className="lb-account-footnote">
-          Sesi aktif diperbarui secara aman di tab ini. Memuat ulang halaman akan meminta login kembali.
+          Sesi aktif diperbarui secara aman di tab ini. Memuat ulang halaman akan meminta login
+          kembali.
         </p>
         <Link to="/">← Kembali ke katalog</Link>
       </Card>

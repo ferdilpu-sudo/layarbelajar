@@ -84,7 +84,12 @@ export async function refreshIdentity(token: string): Promise<AuthIdentity> {
   if (
     typeof value.username !== 'string' ||
     typeof value.must_change_password !== 'boolean' ||
-    !(value.role === null || value.role === 'admin' || value.role === 'teacher' || value.role === 'student')
+    !(
+      value.role === null ||
+      value.role === 'admin' ||
+      value.role === 'teacher' ||
+      value.role === 'student'
+    )
   ) {
     throw new Error('Status akun tidak tersedia.');
   }

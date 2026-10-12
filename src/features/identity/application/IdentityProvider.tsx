@@ -100,24 +100,26 @@ export function IdentityProvider({ children }: { children: ReactNode }) {
     },
     [ensureSession],
   );
-  const login = useCallback(async (username: string, password: string) => {
-    const epoch = generation.current;
-    const next = await signIn(username, password);
-    if (epoch !== generation.current) throw new Error('Sesi telah berubah.');
-    updateSession(next);
-  }, [updateSession]);
+  const login = useCallback(
+    async (username: string, password: string) => {
+      const epoch = generation.current;
+      const next = await signIn(username, password);
+      if (epoch !== generation.current) throw new Error('Sesi telah berubah.');
+      updateSession(next);
+    },
+    [updateSession],
+  );
   const logout = useCallback(() => {
     const token = sessionRef.current?.accessToken;
     clear();
-    if (token) void revokeSession(token).catch(() => {
-      // The local session has already been invalidated; never restore stale credentials.
-    });
+    if (token)
+      void revokeSession(token).catch(() => {
+        // The local session has already been invalidated; never restore stale credentials.
+      });
   }, [clear]);
 
   return (
-    <IdentityContext.Provider
-      value={{ session, login, updateSession, authorizedCall, logout }}
-    >
+    <IdentityContext.Provider value={{ session, login, updateSession, authorizedCall, logout }}>
       {children}
     </IdentityContext.Provider>
   );
