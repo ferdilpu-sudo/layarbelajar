@@ -31,10 +31,12 @@ def main():
                     chunk = os.read(master, 8192)
                 except OSError as exc:
                     if exc.errno == errno.EIO:
-                        break
+                        # PTY can transiently report EIO before the forked slave
+                        # is fully opened; only waitpid can establish child exit.
+                        continue
                     raise
                 if not chunk:
-                    break
+                    continue
                 text.extend(chunk)
                 if not sent and b"Password admin (12+ characters, hidden):" in text:
                     sent = True
@@ -53,7 +55,7 @@ def main():
             except ProcessLookupError:
                 pass
             os.waitpid(pid, 0)
-            print("PTY_TIMEOUT", file=sys.stderr)
+            print("PTY_TIMEOUT prompt=" + str(sent), file=sys.stderr)
             return 1
         if secret in text:
             print("PTY_SECRET_ECHO_DETECTED", file=sys.stderr)
