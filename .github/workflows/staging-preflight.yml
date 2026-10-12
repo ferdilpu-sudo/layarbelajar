@@ -1,0 +1,23 @@
+name: M-002 Hosted Staging Preflight (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staging-readonly:
+    name: Staging checks without data mutation
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate staging Auth, RLS and CORS (GET/OPTIONS only)
+        env:
+          STAGING_PROJECT_REF: ${{ vars.STAGING_PROJECT_REF }}
+          STAGING_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
+          STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+        run: node scripts/staging-preflight.mjs

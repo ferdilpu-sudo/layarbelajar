@@ -1,0 +1,33 @@
+# M-002 — Staging Supabase, runbook non-mutatif
+
+**Status: STAGING NOT RUN / BLOCKED.** Dokumen ini menyediakan pekerjaan yang siap dijalankan **setelah pemilik menyediakan staging**, bukan bukti environment telah dibuat.
+
+## Prasyarat
+
+1. Buat/otorisasi sebuah project **khusus staging** milik pemilik, terpisah dari database produksi dan data siswa asli. Jangan membuat project berbayar atau mengaktifkan billing otomatis. Gunakan hanya akun uji sintetis saat tahap mutatif berikutnya.
+2. Setelah review migrasi, deploy Edge Functions `account-admin` dan `change-password` pada staging dengan `verify_jwt=true`. Konfigurasi `APP_ALLOWED_ORIGINS` di secret Edge berisi **origin HTTPS frontend staging persis**.
+3. Supabase Hosted Auth: disable pendaftaran publik di pengaturan global, namun biarkan email/password sign-in tersedia untuk akun provisioning. Pastikan alias `@accounts.invalid` kompatibel sebelum memasukkan user nyata.
+4. Di GitHub repository, siapkan **Environment** bernama `staging`, set protection/reviewer yang sesuai dan nilai berikut di Environment (jangan menaruhnya dalam git atau chat):
+
+| Nama | Jenis | Contoh/batas |
+|---|---|---|
+| `STAGING_PROJECT_REF` | Variable | Reference Supabase staging, huruf/angka 8–40 |
+| `STAGING_SUPABASE_URL` | Variable | `https://<ref>.supabase.co` (tanpa slash tambahan) |
+| `STAGING_APP_ORIGIN` | Variable | Origin HTTPS frontend staging, tanpa path/query |
+| `STAGING_ANON_KEY` | Secret | JWT legacy dengan role `anon` (BUKAN service_role) |
+
+**Tidak** menambahkan `SUPABASE_SERVICE_ROLE_KEY` sebagai secret workflow preflight. Workflow `.github/workflows/staging-preflight.yml` hanya menggunakan nilai di atas, tanpa identitas guru/siswa, password, atau token admin.
+
+## Jalankan dan nilai hasil
+
+- GitHub → Actions → **M-002 Hosted Staging Preflight (Read Only)** → Run workflow pada `main`. Jika repo belum memiliki environment/values, job akan gagal dengan `STAGING_PREFLIGHT_BLOCKED`; ini **bukan** bukti hosted PASS.
+- Script `node scripts/staging-preflight.mjs` memvalidasi ref/HTTPS, tipe public anon JWT, `GET /auth/v1/health`, GET profil anonim (harus 403 atau `[]`), serta OPTIONS CORS origin disetujui dan origin asing untuk dua Edge Functions. Tidak menggunakan POST/PATCH/DELETE, tidak membuat akun, tidak melakukan deployment atau reset data.
+- Harus terlihat **4 PASS** dan `STAGING_READONLY_PASS`. Jika CORS/anon RLS gagal, jangan lanjut operasi akun di hosted sampai konfigurasi diperbaiki dan gate diulang.
+- Kunci modern `sb_publishable_...` **sengaja ditolak** gate awal: aplikasi sekarang menggunakan bearer anon JWT untuk Edge `verify_jwt=true`. Migrasi ke model key baru harus dibuktikan melalui tes integrasi terpisah; jangan menggunakan service_role key sebagai pengganti.
+- Unit `npm run test:staging-preflight` berjalan offline dan **tidak membuktikan staging tersambung**.
+
+## Penerimaan sesudah preflight
+
+Dengan persetujuan pemilik, siapkan akun sintetis staging dan pengujian end-to-end untuk: provisioning admin→guru/siswa, duplikasi, ganti/reset password, akses lintas role, deactivate dan JWT lama, refresh rotation/focus/resume/logout, origin negatif, pemulihan gagal dan rate-limit, serta backup/restore. Uji Windows bootstrap lokal dari terminal pemilik, tanpa mengekspos password. Simpan screenshot/trace yang tidak memuat kredensial; tidak boleh mempublikasikan secret. Reviewer merekam hasil per gate di `docs/m002-hosted-acceptance.md`.
+
+**M-002 tidak boleh dinyatakan Verified dari preflight read-only saja.**

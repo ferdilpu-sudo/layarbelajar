@@ -2,7 +2,7 @@
 
 Bank materi dan game milik admin untuk pengajaran di IFP serta latihan/LKPD siswa melalui HP, dengan katalog publik dan sesi kelas berkode.
 
-**Status: M-001 Verified untuk fondasi/katalog fixture — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React, katalog contoh dan komponen soft brutalism telah lulus gate CI otomatis serta review empat viewport; belum ada backend, autentikasi nyata atau deployment. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
+**Status saat ini: M-001 Verified; M-002 In Progress (Auth dan Edge lokal teruji, hosted/staging belum terverifikasi) — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React, katalog contoh, Supabase Auth lokal, operasi akun dan UI login telah terimplementasi; deployment belum dikonfirmasi. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
 
 ## Mulai di sini — untuk agent berikutnya
 
@@ -21,9 +21,9 @@ Repositori tujuan: https://github.com/ferdilpu-sudo/layarbelajar.git. README ada
 |---|---|
 | Wawancara, kebutuhan, stack dan arah desain | Selesai; disetujui pemilik |
 | Dokumen | Sepuluh Markdown versi 2, API direncanakan tetap v1 |
-| Implementasi aplikasi | M-001 Verified: scaffold, katalog fixture, shell dan komponen v2; M-002 berikutnya |
-| Build, lint, test aplikasi | PASS M-001: format, lint, typecheck, unit 3, 20 E2E Chromium (4 viewport), token contrast, build, npm audit runtime; belum tes Supabase |
-| Backend/hosting/akun layanan | Belum dikonfigurasi dalam pekerjaan ini |
+| Implementasi aplikasi | M-001 Verified; M-002 Auth/Edge dan UI lokal sudah diuji, hosted masih In Progress |
+| Build, lint, test aplikasi | PASS main setelah PR #5: format/lint/type/unit/kontras/build/Chromium; Supabase lokal 19 integrasi dan 12 browser Auth PASS; staging NOT RUN |
+| Backend/hosting/akun layanan | Supabase Docker lokal sudah diuji; hosted Supabase/Cloudflare dan akun layanan milik pemilik belum diverifikasi |
 | Pemeriksaan yang sudah dilakukan | Nama file, link dokumen, pemetaan REQ/AC/TEST, dan kontras token warna |
 | Deployment dan domain | Belum ada; jangan mengarang URL aplikasi aktif |
 
@@ -184,3 +184,9 @@ Setelah `supabase start`, `supabase db reset --local` dan `supabase functions se
 PR [#5](https://github.com/ferdilpu-sudo/layarbelajar/pull/5) mengimplementasikan refresh token **in-memory** (tanpa localStorage/sessionStorage), pergantian token GoTrue secara serial, refresh saat token mendekati expiry dan saat tab aktif kembali, serta revalidasi profil sebelum akses privilese. Jika refresh/validasi ditolak, UI menghapus sesi; reload tab tetap meminta login ulang. Password bootstrap dapat ditempel dengan aman pada terminal tanpa echo karena input kini diproses per karakter meskipun diterima satu chunk.
 
 CI Supabase lokal [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38253731459): **19 integrasi + 12 browser E2E PASS**, termasuk bootstrap admin dari PTY Linux dan masa hidup token singkat. Jangan menyalahartikan bukti Linux/PTy tersebut sebagai bukti perintah bootstrap sudah dijalankan di terminal Windows pemilik. Untuk hosting, periksa `docs/m002-hosted-acceptance.md` dan jangan pernah menyimpan service-role secret ke Vite/frontend atau mengirimkannya melalui chat.
+
+### M-002 / staging preflight (read-only; manual)
+
+Sesudah PR #5 digabung, Foundation CI main [run 38259216276](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38259216276) **PASS**; branch fitur fondasi session sudah di `main` commit `7707d472`. Gate staging tetap **BLOCKED / NOT RUN** sampai konfigurasi project staging tersedia.
+
+Preflight `npm run test:staging-preflight` adalah **unit contract offline** tanpa network; `node scripts/staging-preflight.mjs` adalah pemeriksaan hosted sungguhan yang membaca environment staging dan memakai hanya `GET`/`OPTIONS`. Workflow manual **M-002 Hosted Staging Preflight (Read Only)** tidak berjalan pada push/PR, dan tidak membuat user, mendeploy fungsi, mengubah database atau menjalankan reset. Setup dan batas bukti terdapat di [staging runbook](./docs/m002-staging-runbook.md). Jangan menyuplai service-role credentials ke workflow tersebut atau menandai M-002 Verified hanya dari preflight PASS.

@@ -22,3 +22,7 @@
 `Supabase local integration`: PASS (19/19); `four-viewport local browser Auth`: PASS (12/12), [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38253731459).
 
 **Do not change M-002 status to Verified** until the applicable hosted/staging acceptance gates above have independently supported results.
+
+## Tahap pra-penerimaan hosted (belum dieksekusi)
+
+Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub Actions preflight. Empat hasil probe (GoTrue health, anon RLS, CORS `account-admin` dan `change-password`) perlu PASS sebelum percobaan hosted yang dapat memutasi akun. Preflight tidak memakai key service role dan tidak dapat membuktikan aturan role administrasi atau refresh JWT. **Status: NOT RUN** hingga staging owner terhubung dan dispatch manual yang terotorisasi. Jangan jalankan ke project produksi.
