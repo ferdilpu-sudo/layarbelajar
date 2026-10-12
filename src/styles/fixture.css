@@ -1,0 +1,92 @@
+.lb-fixture {
+  padding-bottom: 48px;
+}
+.lb-fixture-section {
+  margin-block: 24px 36px;
+}
+.lb-fixture-section h2 {
+  font-size: 1.3rem;
+  margin-block: 0 16px;
+}
+.lb-fixture-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.lb-fixture-fields,
+.lb-fixture-alerts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.lb-fixture-grid {
+  margin-bottom: 16px;
+}
+.lb-answer-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  min-height: 48px;
+  background: var(--lb-surface);
+  border: var(--lb-border);
+  border-radius: var(--lb-radius-control);
+  box-shadow: var(--lb-shadow-mobile);
+  font-weight: 700;
+  cursor: pointer;
+}
+.lb-answer-option[aria-pressed='true'] {
+  background: var(--lb-worksheet);
+}
+.lb-answer-option:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.lb-answer-check {
+  font-weight: 800;
+}
+.lb-field-error {
+  color: var(--lb-error-text);
+  font-size: 0.9rem;
+}
+.lb-input[aria-invalid='true'] {
+  border-color: var(--lb-error-text);
+}
+.lb-dialog {
+  width: min(560px, calc(100% - 32px));
+  padding: 24px;
+  color: var(--lb-ink);
+  background: var(--lb-surface);
+  border: var(--lb-border);
+  border-radius: var(--lb-radius-card);
+  box-shadow: var(--lb-shadow-emphasis);
+}
+.lb-dialog::backdrop {
+  background: rgb(36 36 36 / 58%);
+}
+.lb-dialog h2 {
+  margin-block: 0 16px;
+  line-height: 1.2;
+}
+.lb-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+@media (max-width: 639px) {
+  .lb-fixture-fields,
+  .lb-fixture-alerts {
+    grid-template-columns: 1fr;
+  }
+  .lb-dialog {
+    padding: 16px;
+    box-shadow: var(--lb-shadow-mobile);
+  }
+}
+@media print {
+  .lb-dialog {
+    box-shadow: none;
+  }
+}
