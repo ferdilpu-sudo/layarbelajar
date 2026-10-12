@@ -82,8 +82,13 @@ async function updatePrivileged(id, changes) {
 }
 
 test('TASK-006 local Auth alias spike + profile access and deny-by-default RLS', async (t) => {
-  try {
-    await t.test('open registration disabled (admin creates users only)', async () => {
+  t.after(async () => {
+    for (const id of createdUsers.reverse()) {
+      const removed = await localRequest(local.url, local.serviceKey, '/auth/v1/admin/users/' + id, { method: 'DELETE' });
+      assert.equal(removed.ok, true, 'Synthetic Auth cleanup must succeed');
+    }
+  });
+  await t.test('open registration disabled (admin creates users only)', async () => {
       const signup = await localRequest(local.url, local.anonKey, '/auth/v1/signup', {
         method: 'POST',
         body: { email: sampleUsername('signup') + '@accounts.invalid', password },
@@ -179,15 +184,4 @@ test('TASK-006 local Auth alias spike + profile access and deny-by-default RLS',
       const response = await localRequest(local.url, local.anonKey, '/rest/v1/profiles?select=id');
       assert.ok(!response.ok || (Array.isArray(response.data) && response.data.length === 0));
     });
-  } finally {
-    for (const id of createdUsers.reverse()) {
-      const removed = await localRequest(
-        local.url,
-        local.serviceKey,
-        '/auth/v1/admin/users/' + id,
-        { method: 'DELETE' },
-      );
-      if (!removed.ok) throw new Error('Failed to clean up synthetic Auth user: ' + id);
-    }
-  }
 });
