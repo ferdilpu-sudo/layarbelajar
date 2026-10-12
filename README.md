@@ -21,9 +21,9 @@ Repositori tujuan: https://github.com/ferdilpu-sudo/layarbelajar.git. README ada
 |---|---|
 | Wawancara, kebutuhan, stack dan arah desain | Selesai; disetujui pemilik |
 | Dokumen | Sepuluh Markdown versi 2, API direncanakan tetap v1 |
-| Implementasi aplikasi | M-001 Verified: scaffold, katalog fixture, shell dan komponen v2; M-002 berikutnya |
-| Build, lint, test aplikasi | PASS M-001: format, lint, typecheck, unit 3, 20 E2E Chromium (4 viewport), token contrast, build, npm audit runtime; belum tes Supabase |
-| Backend/hosting/akun layanan | Belum dikonfigurasi dalam pekerjaan ini |
+| Implementasi aplikasi | M-001 Verified; M-002 Auth/Edge dan UI lokal sudah diuji, hosted masih In Progress |
+| Build, lint, test aplikasi | PASS main setelah PR #5: format/lint/type/unit/kontras/build/Chromium; Supabase lokal 19 integrasi dan 12 browser Auth PASS; staging NOT RUN |
+| Backend/hosting/akun layanan | Supabase Docker lokal sudah diuji; hosted Supabase/Cloudflare dan akun layanan milik pemilik belum diverifikasi |
 | Pemeriksaan yang sudah dilakukan | Nama file, link dokumen, pemetaan REQ/AC/TEST, dan kontras token warna |
 | Deployment dan domain | Belum ada; jangan mengarang URL aplikasi aktif |
 
