@@ -81,3 +81,7 @@ Catat pada laporan milestone: tanggal, commit, lingkungan/browser/perangkat, per
 6. Jalankan TEST-007 bersama audit shell game: gaya baru tidak mengubah sandbox, CSP, perilaku fullscreen atau akses token. Isi game boleh berbeda gaya tanpa membuat test visual shell gagal.
 
 Status tetap NOT RUN untuk seluruh pengujian UI aplikasi sampai implementasi tersedia. Validasi hitung kontras token pada dokumen bukan bukti bahwa layout dan aksesibilitas runtime sudah lulus.
+
+## Checkpoint M-001: status pengujian awal (12 Oktober 2026)
+
+Source unit test filter katalog dan Playwright E2E fixture sudah ditulis di branch fitur, tetapi **belum dieksekusi** karena dependency install terhambat DNS registry npm. Lint/typecheck/build/format/test serta audit kontras, viewport IFP, dan RLS tetap **NOT RUN**. CI baru menyediakan percobaan awal, bukan bukti PASS. TEST-001 belum lengkap (belum ada DB/RLS), dan TEST-014 belum memenuhi gate perangkat/komponen.

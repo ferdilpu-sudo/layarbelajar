@@ -1,6 +1,6 @@
 # Rencana Implementasi — LayarBelajar
 
-Status: seluruh milestone **Not started**. Paket ini handoff spesifikasi; belum ada source aplikasi, akun layanan atau deployment. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
+Status: **M-001 In progress** pada branch `feat/m001-foundation-catalog`; M-002 hingga M-007 **Not started**. Kode fondasi dan katalog fixture sudah ada di branch; aplikasi belum lulus gate, belum ada akun layanan atau deployment. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
 
 ## Milestone dan gate
 
@@ -58,4 +58,15 @@ Definition of done setiap increment: perilaku sesuai REQ/AC, test bermakna, erro
 
 REQ-014 dikerjakan lintas milestone, bukan fase redesign setelah aplikasi selesai. Pada M-001 jalankan TASK-004 termasuk tokens.css, komponen dan brand.ts. M-003 memakai komponen tersebut pada editor/katalog nyata; M-004 menerapkan mode IFP, wrapper game dan print tanpa shadow; M-005/M-006 menerapkan opsi jawaban, status tersimpan, penilaian dan tabel yang rapi; M-007 menuntaskan TEST-014 semua layar/perangkat.
 
-TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state, hitung kontras token, cek mapping jenis konten dan snapshot awal yang direview. TASK-018 (bagian M-007, bergantung TASK-015): audit TEST-014 end-to-end di HP/IFP/cetak, catat bukti sebelum rilis. Nomor tugas bukan urutan eksekusi; dependensi milestone menentukan urutan. Semua tugas implementasi tetap Not started.
+TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state, hitung kontras token, cek mapping jenis konten dan snapshot awal yang direview. TASK-018 (bagian M-007, bergantung TASK-015): audit TEST-014 end-to-end di HP/IFP/cetak, catat bukti sebelum rilis. Nomor tugas bukan urutan eksekusi; dependensi milestone menentukan urutan. TASK-001 sudah melakukan inventaris dan riset kompatibilitas; TASK-002/003/004 In progress pada branch fitur; TASK-005/017 belum Verified.
+
+## Checkpoint 12 Oktober 2026 — M-001 In progress
+
+- Baseline main `9411632ab4730b55ca1d9342cd05433dedcb002c`, seluruh 10 dokumen spesifikasi tetap dipertahankan.
+- TASK-001: dokumen, struktur dan dependensi dibaca; Node.js 24 Active LTS dan rilis Vite 8.3.4, Vitest 5.0.3 diverifikasi dari sumber resmi. Node lokal 22.16.0 dan npm 10.9.2 terdeteksi. Seluruh versi dependency yang terpasang **belum** diverifikasi.
+- TASK-002: scaffold React/Vite/TS/Tailwind, konfigurasi strict type, ESLint/Prettier, Vitest/Playwright, Cloudflare SPA fallback dan CI awal tersedia di branch. `package-lock.json` **belum ada** karena akses DNS `registry.npmjs.org` gagal pada lingkungan penulis. CI sementara membuat candidate lock dan artefak, bukan pengganti committed lock. `npm ci`, build, lint, format, typecheck, unit dan E2E: **NOT RUN** pada lingkungan penulis.
+- TASK-003: domain dan repository port katalog, fixture sintetis, pencarian dan kombinasi filter, reset, loading/error/empty dan test awal telah ditulis. Integrasi Supabase/RLS TEST-001 belum dimulai.
+- TASK-004: token design.md, komponen bersama, wordmark, shell responsif, focus/reduced motion dan print dasar telah ditulis. TEST-014 HP/IFP/aksesibilitas belum dijalankan. Halaman login dan gabung hanya placeholder, bukan autentikasi/sesi aktif.
+- TASK-005 dan TASK-017: **NOT STARTED** untuk gate lengkap dan audit visual. **M-001 NOT VERIFIED**; M-002 dan seterusnya tidak dimulai.
+
+**Next:** pada lingkungan dengan npm registry, jalankan `npm install` lalu commit `package-lock.json`, hilangkan langkah generate-lock sementara dari CI, gunakan `npm ci`, jalankan format-check/lint/typecheck/unit/build/E2E, perbaiki semua kegagalan, lalu jalankan TASK-017 sebelum gate M-001.
