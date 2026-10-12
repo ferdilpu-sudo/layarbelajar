@@ -146,7 +146,14 @@ test('TASK-007 local protected account operations (real Auth + Edge + RLS)', asy
         new_password: rotatedPassword,
       });
       assert.equal(changed.status, 200, 'Change password must succeed before unblocking RLS');
+      const reauth = await localRequest(env.url, env.anonKey, '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        body: { email: username('teacher') + '@accounts.invalid', password: rotatedPassword },
+      });
+      assert.equal(reauth.ok, true, 'After changing password, new credentials must work');
+      teacher.token = reauth.data?.access_token;
       const ready = await edge('change-password', teacher.token);
+      assert.equal(ready.status, 200);
       assert.equal(ready.data?.data?.must_change_password, false);
       assert.equal(ready.data?.data?.role, 'teacher');
     },

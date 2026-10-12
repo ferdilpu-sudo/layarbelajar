@@ -5,7 +5,7 @@ import { Button } from '../../../shared/ui/Button';
 import { Card } from '../../../shared/ui/Card';
 import { Input } from '../../../shared/ui/Input';
 import { useIdentity } from '../application/IdentityProvider';
-import { functionCall, refreshIdentity } from '../infrastructure/accountApi';
+import { functionCall, signIn } from '../infrastructure/accountApi';
 
 export function ChangePasswordPage() {
   const { session, updateSession } = useIdentity();
@@ -30,8 +30,10 @@ export function ChangePasswordPage() {
         old_password: oldPassword,
         new_password: newPassword,
       });
-      const identity = await refreshIdentity(session!.accessToken);
-      updateSession({ accessToken: session!.accessToken, identity });
+      // GoTrue can invalidate the previous JWT after a password change.
+      // Get a fresh session using the newly verified credentials.
+      const newSession = await signIn(session!.identity.username, newPassword);
+      updateSession(newSession);
       setOldPassword('');
       setNewPassword('');
       setSuccess(true);
