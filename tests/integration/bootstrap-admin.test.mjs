@@ -42,13 +42,27 @@ test(
         child.kill('SIGKILL');
         reject(new Error('Bootstrap PTY driver timed out'));
       }, 23_000);
-      child.stdout.on('data', (data) => { transcript += data.toString(); });
-      child.stderr.on('data', (data) => { transcript += data.toString(); });
-      child.on('error', (error) => { clearTimeout(timeout); reject(error); });
+      child.stdout.on('data', (data) => {
+        transcript += data.toString();
+      });
+      child.stderr.on('data', (data) => {
+        transcript += data.toString();
+      });
+      child.on('error', (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
       child.on('close', (code) => {
         clearTimeout(timeout);
         if (code !== 0 || !transcript.includes('BOOTSTRAP_PTY_OK')) {
-          reject(new Error('Bootstrap PTY failed, status ' + String(code) + ', diagnostic: ' + transcript.replaceAll(password, '[REDACTED]').slice(-220)));
+          reject(
+            new Error(
+              'Bootstrap PTY failed, status ' +
+                String(code) +
+                ', diagnostic: ' +
+                transcript.replaceAll(password, '[REDACTED]').slice(-220),
+            ),
+          );
         } else {
           resolve(transcript);
         }
