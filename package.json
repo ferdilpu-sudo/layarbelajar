@@ -14,10 +14,11 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run src",
     "test:integration": "node scripts/integration-not-configured.mjs",
     "test:e2e": "playwright test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:tokens": "node scripts/check-token-contrast.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.0",
