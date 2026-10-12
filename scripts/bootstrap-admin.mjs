@@ -7,7 +7,6 @@ function readSecret(prompt) {
       reject(new Error('Secure password prompt needs interactive terminal.'));
       return;
     }
-    stdout.write(prompt);
     let secret = '';
     stdin.setRawMode(true);
     stdin.resume();
@@ -32,6 +31,8 @@ function readSecret(prompt) {
       stdin.pause();
     }
     stdin.on('data', handle);
+    // Only display the prompt after the terminal is in raw mode and listening.
+    stdout.write(prompt);
   });
 }
 
