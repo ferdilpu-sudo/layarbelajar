@@ -36,7 +36,9 @@ function readSecret(prompt) {
 }
 
 function validateText(value, max) {
-  return typeof value === 'string' && value.length >= 1 && value.length <= max && value === value.trim();
+  return (
+    typeof value === 'string' && value.length >= 1 && value.length <= max && value === value.trim()
+  );
 }
 
 const [usernameArg, displayArg] = process.argv.slice(2);
@@ -60,7 +62,14 @@ try {
   createdId = auth.data.id;
   const profile = await localRequest(url, serviceKey, '/rest/v1/profiles', {
     method: 'POST',
-    body: { id: createdId, username, display_name: displayName, role: 'admin', active: true, must_change_password: false },
+    body: {
+      id: createdId,
+      username,
+      display_name: displayName,
+      role: 'admin',
+      active: true,
+      must_change_password: false,
+    },
   });
   if (!profile.ok) throw new Error('Admin profile create failed.');
   console.log('Local admin bootstrapped successfully. Credentials never printed.');
@@ -69,7 +78,8 @@ try {
     const rollback = await localRequest(url, serviceKey, '/auth/v1/admin/users/' + createdId, {
       method: 'DELETE',
     });
-    if (!rollback.ok) console.error('ROLLBACK FAILED: manually reconcile orphan Auth ID:', createdId);
+    if (!rollback.ok)
+      console.error('ROLLBACK FAILED: manually reconcile orphan Auth ID:', createdId);
   }
   throw error;
 }
