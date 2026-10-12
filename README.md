@@ -2,7 +2,7 @@
 
 Bank materi dan game milik admin untuk pengajaran di IFP serta latihan/LKPD siswa melalui HP, dengan katalog publik dan sesi kelas berkode.
 
-**Status: M-001 In progress pada branch fitur — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React dan katalog fixture sudah ditulis; belum ada backend, lockfile terkomit, verifikasi runtime atau deployment. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
+**Status: M-001 In progress pada branch fitur — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React dan katalog fixture sudah ditulis; belum ada backend atau deployment; lockfile terkomit dan pemeriksaan fixture di CI awal telah PASS. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
 
 ## Mulai di sini — untuk agent berikutnya
 
@@ -22,7 +22,7 @@ Repositori tujuan: https://github.com/ferdilpu-sudo/layarbelajar.git. README ada
 | Wawancara, kebutuhan, stack dan arah desain | Selesai; disetujui pemilik |
 | Dokumen | Sepuluh Markdown versi 2, API direncanakan tetap v1 |
 | Implementasi aplikasi | M-001 In progress di branch fitur, scaffold dan katalog fixture |
-| Build, lint, test aplikasi | NOT RUN pada lingkungan penulis; npm registry gagal diakses, lockfile belum ada |
+| Build, lint, test aplikasi | PASS terbatas pada GitHub Actions untuk fixture: lint, typecheck, unit 3, build dan Playwright 4; lingkungan penulis masih offline |
 | Backend/hosting/akun layanan | Belum dikonfigurasi dalam pekerjaan ini |
 | Pemeriksaan yang sudah dilakukan | Nama file, link dokumen, pemetaan REQ/AC/TEST, dan kontras token warna |
 | Deployment dan domain | Belum ada; jangan mengarang URL aplikasi aktif |
@@ -152,3 +152,5 @@ npm run test:e2e
 ```
 
 Commit `package-lock.json` setelah `npm install`, dan ubah CI agar menggunakan `npm ci` murni. `npm run test:integration` sengaja gagal dengan status NOT RUN sampai Supabase lokal dan migrasi tersedia pada M-002. Tidak ada tes atau perintah di atas yang dapat dinyatakan PASS berdasarkan dokumen saja.
+
+**Update CI 12 Oktober 2026:** `package-lock.json` kini telah di-commit di branch melalui GitHub Actions. CI awal membuktikan `npm ci`, lint, typecheck, 3 unit, 12 kontras token, build dan 4 browser E2E PASS: https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969. Workflow final memakai `npm ci` saja. Pengujian penuh TEST-001..014, IFP aktual dan backend belum dinyatakan lulus.

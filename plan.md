@@ -70,3 +70,11 @@ TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state,
 - TASK-005 dan TASK-017: **NOT STARTED** untuk gate lengkap dan audit visual. **M-001 NOT VERIFIED**; M-002 dan seterusnya tidak dimulai.
 
 **Next:** pada lingkungan dengan npm registry, jalankan `npm install` lalu commit `package-lock.json`, hilangkan langkah generate-lock sementara dari CI, gunakan `npm ci`, jalankan format-check/lint/typecheck/unit/build/E2E, perbaiki semua kegagalan, lalu jalankan TASK-017 sebelum gate M-001.
+
+### Checkpoint terverifikasi berikutnya — 12 Oktober 2026
+
+- Branch fitur menerima lockfile yang dihasilkan npm melalui workflow, dan source otomatis diformat (kedua perubahan masuk commit pada branch). Langkah generate-lock/format sekali saja kemudian dicabut dari workflow; CI akhir menggunakan `npm ci` dan permission `contents: read`.
+- GitHub Actions run [38205275969](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969): **PASS** npm ci, lint, typecheck, 3 unit test, 12 pasang warna token, production build Vite, dan 4 tes Playwright Chromium (360 px dan 1280 px). Bukti ini untuk katalog fixture saja.
+- Run [38205430420](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205430420): format-check, lint, typecheck, unit, kontras, build telah PASS saat dicatat; E2E masih berjalan ketika checkpoint ini ditulis. Jangan mengubah hasil yang belum diketahui menjadi PASS.
+- TASK-002: source+lockfile sudah tersedia dan CI penting pernah PASS. TASK-003/004: UI fixture teruji terbatas. TASK-005: **IN PROGRESS** sampai CI akhir setelah pembersihan workflow dan seluruh gate M-001 tercatat. TASK-017: **TODO**, buat fixture seluruh state, screenshot baseline dan verifikasi 360/768/1280/1920; IFP aktual tetap M-007.
+- Semua TEST-001/014 penuh, Supabase/RLS dan integrasi kelas tetap **NOT RUN**. M-001 tetap belum Verified.

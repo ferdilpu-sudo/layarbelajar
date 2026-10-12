@@ -75,3 +75,5 @@ Konsekuensi: komponen dan token harus dibangun sejak M-001, tidak ditambahkan se
 ## ADR-010 — Toolchain kandidat M-001 (12 Oktober 2026)
 
 **Provisional:** Node 24 Active LTS menjadi pilihan CI; Vite 8.3.4 dan Vitest 5.0.3 sudah memiliki rilis stabil. React/TypeScript/Tailwind/React Router tetap mengikuti ADR-001. Versi lengkap belum dapat di-resolve atau dikunci karena registry npm tidak dapat diakses di lingkungan penulis. Paket dipasang, lockfile diperiksa, dan compatibility gate harus lulus sebelum ADR ini final. Referensi: https://github.com/nodejs/Release , https://vite.dev/guide/ , https://github.com/vitejs/vite/releases , https://github.com/vitest-dev/vitest/releases , https://tailwindcss.com/docs/installation/using-vite .
+
+**Pembaruan ADR-010:** npm berhasil resolve dependensi melalui GitHub Actions dan mencatat `package-lock.json` pada branch M-001. Node 24, Vite 8.3.4 dan Vitest 5.0.3 lulus build/unit/E2E CI awal; masih harus mempertahankan lockfile pada pipeline final dan menilai dependency audit sebelum rilis.

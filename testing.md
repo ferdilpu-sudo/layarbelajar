@@ -85,3 +85,7 @@ Status tetap NOT RUN untuk seluruh pengujian UI aplikasi sampai implementasi ter
 ## Checkpoint M-001: status pengujian awal (12 Oktober 2026)
 
 Source unit test filter katalog dan Playwright E2E fixture sudah ditulis di branch fitur, tetapi **belum dieksekusi** karena dependency install terhambat DNS registry npm. Lint/typecheck/build/format/test serta audit kontras, viewport IFP, dan RLS tetap **NOT RUN**. CI baru menyediakan percobaan awal, bukan bukti PASS. TEST-001 belum lengkap (belum ada DB/RLS), dan TEST-014 belum memenuhi gate perangkat/komponen.
+
+### Hasil aktual lintas checker untuk katalog fixture — 12 Oktober 2026
+
+Github Actions run [38205275969](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969) berhasil: `npm ci`, ESLint, strict TypeScript, **3 Vitest unit**, **12 kontras token**, production build, serta **4 Playwright Chromium E2E** pada 360/1280 px. Tidak ada Supabase/RLS nyata; TEST-001 terverifikasi hanya unit/katalog fixture, TEST-014 hanya warna token dan responsive E2E sederhana, bukan acceptance penuh. Format check PASS pada run 38205430420 saat checkpoint; CI final sesudah penghapusan bootstrap tetap perlu dijalankan sebelum gate M-001. TEST-002..013 dan audit IFP manual tetap NOT RUN.
