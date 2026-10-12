@@ -61,6 +61,13 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     await page.getByRole('button', { name: 'Masuk' }).click();
   }
 
+  async function clientNavigate(page, path) {
+    await page.evaluate((destination) => {
+      window.history.pushState({}, '', destination);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }, path);
+  }
+
   test('admin provision → teacher pending → change password → reset/deactivate', async ({
     page,
   }) => {
@@ -82,22 +89,22 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     assert.match(teacherId, /^[0-9a-f-]{36}$/i);
     await page.getByRole('button', { name: 'Sembunyikan' }).click();
     await expect(
-      page.locator('.lb-account-list').getByText('Guru Sintetis', { exact: true }),
+      page.locator('.lb-account-list li').filter({ hasText: '@' + teacherUsername }).getByText('Guru Sintetis', { exact: true }),
     ).toBeVisible();
 
-    await page.goto('/akun');
+    await page.getByRole('link', { name: /Kembali ke akun/ }).click();
     await page.getByRole('button', { name: 'Keluar' }).click();
     await expect(page).toHaveURL(/\/login$/);
     await login(page, teacherUsername, temporaryPassword);
     await expect(page).toHaveURL(/\/ganti-password$/);
-    await page.goto('/admin/akun');
+    await clientNavigate(page, '/admin/akun');
     await expect(page).toHaveURL(/\/ganti-password$/);
     await page.getByLabel('Password lama').fill(temporaryPassword);
     await page.getByLabel('Password baru (12 karakter atau lebih)').fill(changedPassword);
     await page.getByRole('button', { name: 'Simpan password baru' }).click();
     await expect(page).toHaveURL(/\/akun$/);
     await expect(page.getByText('Role: Guru.')).toBeVisible();
-    await page.goto('/admin/akun');
+    await clientNavigate(page, '/admin/akun');
     await expect(page).toHaveURL(/\/akun$/);
 
     // Session storage is deliberately memory-only: reload demands a fresh login.
@@ -119,8 +126,8 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     await page.getByRole('combobox', { name: 'Tindakan' }).selectOption('deactivate');
     page.once('dialog', (dialog) => void dialog.accept());
     await page.getByRole('button', { name: 'Jalankan' }).click();
-    await expect(page.locator('.lb-account-list').getByText(/Nonaktif/)).toBeVisible();
-    await page.goto('/akun');
+    await expect(page.locator('.lb-account-list li').filter({ hasText: '@' + teacherUsername }).getByText(/Nonaktif/)).toBeVisible();
+    await page.getByRole('link', { name: /Kembali ke akun/ }).click();
     await page.getByRole('button', { name: 'Keluar' }).click();
     await login(page, teacherUsername, resetPassword);
     await expect(page.getByRole('alert')).toContainText('Akun tidak aktif');
