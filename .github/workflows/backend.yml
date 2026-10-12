@@ -4,6 +4,8 @@ on:
     paths:
       - 'supabase/**'
       - 'tests/integration/**'
+      - 'tests/auth-e2e/**'
+      - 'playwright.auth.config.ts'
       - 'scripts/local-supabase-env.mjs'
       - 'scripts/bootstrap-admin.mjs'
       - '.github/workflows/backend.yml'
@@ -35,6 +37,10 @@ jobs:
           echo $! > /tmp/layarbelajar-edge.pid
       - name: Auth alias and RLS negative integration checks
         run: npm run test:integration
+      - name: Install Chromium for true browser/Auth integration
+        run: npx playwright install --with-deps chromium
+      - name: Test four viewports against local Auth and Edge
+        run: npm run test:e2e:auth:local
       - name: Report Edge startup diagnostics on failure
         if: failure()
         run: tail -80 /tmp/layarbelajar-edge.log || true

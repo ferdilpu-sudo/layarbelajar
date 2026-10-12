@@ -11,7 +11,7 @@ export default tseslint.config(
     languageOptions: { globals: { Deno: 'readonly', ...globals.browser } },
   },
   {
-    files: ['scripts/**/*.mjs', 'tests/integration/**/*.mjs'],
+    files: ['scripts/**/*.mjs', 'tests/integration/**/*.mjs', 'tests/auth-e2e/**/*.mjs'],
     languageOptions: { globals: globals.node },
   },
   {
