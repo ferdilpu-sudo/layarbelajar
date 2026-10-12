@@ -44,6 +44,10 @@ def main():
                 code = os.waitstatus_to_exitcode(status)
                 break
         if code is None:
+            waited, status = os.waitpid(pid, os.WNOHANG)
+            if waited:
+                code = os.waitstatus_to_exitcode(status)
+        if code is None:
             try:
                 os.kill(pid, 9)
             except ProcessLookupError:
