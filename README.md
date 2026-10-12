@@ -2,7 +2,7 @@
 
 Bank materi dan game milik admin untuk pengajaran di IFP serta latihan/LKPD siswa melalui HP, dengan katalog publik dan sesi kelas berkode.
 
-**Status: M-001 In progress pada branch fitur — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React dan katalog fixture sudah ditulis; belum ada backend atau deployment; lockfile terkomit dan pemeriksaan fixture di CI awal telah PASS. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
+**Status: M-001 Verified untuk fondasi/katalog fixture — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React, katalog contoh dan komponen soft brutalism telah lulus gate CI otomatis serta review empat viewport; belum ada backend, autentikasi nyata atau deployment. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
 
 ## Mulai di sini — untuk agent berikutnya
 
