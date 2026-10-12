@@ -21,7 +21,11 @@ export function Input({ label, id, error, className = '', ...props }: Props) {
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : props['aria-describedby']}
       />
-      {error ? <span id={errorId} className="lb-field-error">{error}</span> : null}
+      {error ? (
+        <span id={errorId} className="lb-field-error">
+          {error}
+        </span>
+      ) : null}
     </div>
   );
 }

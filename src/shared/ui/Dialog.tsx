@@ -41,7 +41,9 @@ export function Dialog({ open, title, onClose, children }: Props) {
       <h2 id={titleId}>{title}</h2>
       <div className="lb-dialog-content">{children}</div>
       <div className="lb-dialog-actions">
-        <Button variant="secondary" onClick={onClose}>Tutup</Button>
+        <Button variant="secondary" onClick={onClose}>
+          Tutup
+        </Button>
       </div>
     </dialog>
   );

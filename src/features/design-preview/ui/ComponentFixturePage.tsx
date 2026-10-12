@@ -59,9 +59,18 @@ export function ComponentFixturePage() {
           <Input label="Judul wajib" error="Judul wajib diisi" placeholder="Wajib diisi" />
         </div>
         <div className="lb-fixture-row">
-          <FilterChip active={filterSelected} onClick={() => setFilterSelected(!filterSelected)}>Materi</FilterChip>
-          <AnswerOption selected={answerSelected} onClick={() => setAnswerSelected(!answerSelected)}>Pilihan A</AnswerOption>
-          <AnswerOption selected={false} disabled onClick={() => undefined}>Pilihan nonaktif</AnswerOption>
+          <FilterChip active={filterSelected} onClick={() => setFilterSelected(!filterSelected)}>
+            Materi
+          </FilterChip>
+          <AnswerOption
+            selected={answerSelected}
+            onClick={() => setAnswerSelected(!answerSelected)}
+          >
+            Pilihan A
+          </AnswerOption>
+          <AnswerOption selected={false} disabled onClick={() => undefined}>
+            Pilihan nonaktif
+          </AnswerOption>
         </div>
       </section>
       <section className="lb-fixture-section" aria-labelledby="alert-states">
@@ -74,7 +83,9 @@ export function ComponentFixturePage() {
       <section className="lb-fixture-section" aria-labelledby="card-states">
         <h2 id="card-states">Pemetaan kategori</h2>
         <div className="catalog-grid lb-fixture-grid">
-          {examples.map(({ kind, title }) => <ContentCard key={kind} item={exampleItem(kind, title)} />)}
+          {examples.map(({ kind, title }) => (
+            <ContentCard key={kind} item={exampleItem(kind, title)} />
+          ))}
         </div>
       </section>
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} title="Contoh dialog">

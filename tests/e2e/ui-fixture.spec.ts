@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('komponen memiliki mapping kategori, minimum target sentuh, dan tidak overflow', async ({ page }, testInfo) => {
+test('komponen memiliki mapping kategori, minimum target sentuh, dan tidak overflow', async ({
+  page,
+}, testInfo) => {
   await page.goto('/__ui');
   await expect(page.getByRole('heading', { name: 'Uji komponen LayarBelajar' })).toBeVisible();
 
@@ -14,9 +16,9 @@ test('komponen memiliki mapping kategori, minimum target sentuh, dan tidak overf
   }
 
   const measures = await page.evaluate(() => {
-    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>(
-      '.lb-button, .lb-chip, .lb-answer-option',
-    ));
+    const buttons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>('.lb-button, .lb-chip, .lb-answer-option'),
+    );
     return {
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -30,14 +32,23 @@ test('komponen memiliki mapping kategori, minimum target sentuh, dan tidak overf
 
   const imagePath = testInfo.outputPath('ui-components.png');
   await page.screenshot({ path: imagePath, fullPage: true, animations: 'disabled' });
-  await testInfo.attach('ui-components-visual-review', { path: imagePath, contentType: 'image/png' });
+  await testInfo.attach('ui-components-visual-review', {
+    path: imagePath,
+    contentType: 'image/png',
+  });
 });
 
 test('aksesibilitas tombol, input, chip, pilihan dan dialog', async ({ page }) => {
   await page.goto('/__ui');
   await expect(page.getByRole('button', { name: 'Memproses' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Memproses' })).toHaveAttribute('aria-busy', 'true');
-  await expect(page.getByRole('textbox', { name: 'Judul wajib' })).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.getByRole('button', { name: 'Memproses' })).toHaveAttribute(
+    'aria-busy',
+    'true',
+  );
+  await expect(page.getByRole('textbox', { name: 'Judul wajib' })).toHaveAttribute(
+    'aria-invalid',
+    'true',
+  );
   await expect(page.getByText('Judul wajib diisi')).toBeVisible();
 
   const chip = page.getByRole('button', { name: /Materi/ });

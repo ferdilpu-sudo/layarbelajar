@@ -19,7 +19,9 @@ export function AnswerOption({
       disabled={disabled}
       onClick={onClick}
     >
-      <span className="lb-answer-check" aria-hidden="true">{selected ? '✓' : '○'}</span>
+      <span className="lb-answer-check" aria-hidden="true">
+        {selected ? '✓' : '○'}
+      </span>
       <span>{children}</span>
     </button>
   );
