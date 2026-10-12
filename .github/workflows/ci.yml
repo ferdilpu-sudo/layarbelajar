@@ -1,0 +1,38 @@
+name: Foundation CI
+on:
+  pull_request:
+  push:
+    branches: [main, feat/m001-foundation-catalog]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      # Interim: lockfile belum tersedia di lingkungan penulis.
+      # TASK-002 belum Verified sampai lockfile di-commit dan baris ini dihapus.
+      - name: Generate temporary dependency lock
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Install dependencies from generated lock
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Build
+        run: npm run build
+      - name: Chromium E2E
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - name: Upload temporary lockfile for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-package-lock
+          path: package-lock.json
+          if-no-files-found: ignore
