@@ -84,104 +84,109 @@ async function updatePrivileged(id, changes) {
 test('TASK-006 local Auth alias spike + profile access and deny-by-default RLS', async (t) => {
   t.after(async () => {
     for (const id of createdUsers.reverse()) {
-      const removed = await localRequest(local.url, local.serviceKey, '/auth/v1/admin/users/' + id, { method: 'DELETE' });
+      const removed = await localRequest(
+        local.url,
+        local.serviceKey,
+        '/auth/v1/admin/users/' + id,
+        { method: 'DELETE' },
+      );
       assert.equal(removed.ok, true, 'Synthetic Auth cleanup must succeed');
     }
   });
   await t.test('open registration disabled (admin creates users only)', async () => {
-      const signup = await localRequest(local.url, local.anonKey, '/auth/v1/signup', {
-        method: 'POST',
-        body: { email: sampleUsername('signup') + '@accounts.invalid', password },
-      });
-      assert.equal(signup.ok, false, 'Anonymous self-signup must be disabled');
+    const signup = await localRequest(local.url, local.anonKey, '/auth/v1/signup', {
+      method: 'POST',
+      body: { email: sampleUsername('signup') + '@accounts.invalid', password },
     });
+    assert.equal(signup.ok, false, 'Anonymous self-signup must be disabled');
+  });
 
-    const student = await createUser(sampleUsername('student'));
-    const other = await createUser(sampleUsername('teacher'), { role: 'teacher', pending: true });
-    const orphan = await createUser(sampleUsername('orphan'), { createProfile: false });
+  const student = await createUser(sampleUsername('student'));
+  const other = await createUser(sampleUsername('teacher'), { role: 'teacher', pending: true });
+  const orphan = await createUser(sampleUsername('orphan'), { createProfile: false });
 
-    await t.test('username alias is accepted and a ready student sees own row only', async () => {
-      assert.ok(student.alias.endsWith('@accounts.invalid'));
-      assert.deepEqual(
-        (await ownRows(student.accessToken)).map((x) => x.id),
-        [student.id],
-      );
-    });
-
-    await t.test(
-      'temporary password flag blocks profile access until trusted server clears it',
-      async () => {
-        assert.deepEqual(await ownRows(other.accessToken), []);
-        await updatePrivileged(other.id, { must_change_password: false });
-        assert.deepEqual(
-          (await ownRows(other.accessToken)).map((x) => x.id),
-          [other.id],
-        );
-      },
+  await t.test('username alias is accepted and a ready student sees own row only', async () => {
+    assert.ok(student.alias.endsWith('@accounts.invalid'));
+    assert.deepEqual(
+      (await ownRows(student.accessToken)).map((x) => x.id),
+      [student.id],
     );
+  });
 
-    await t.test('other profile inaccessible despite searching explicit foreign ID', async () => {
-      const response = await localRequest(
+  await t.test(
+    'temporary password flag blocks profile access until trusted server clears it',
+    async () => {
+      assert.deepEqual(await ownRows(other.accessToken), []);
+      await updatePrivileged(other.id, { must_change_password: false });
+      assert.deepEqual(
+        (await ownRows(other.accessToken)).map((x) => x.id),
+        [other.id],
+      );
+    },
+  );
+
+  await t.test('other profile inaccessible despite searching explicit foreign ID', async () => {
+    const response = await localRequest(
+      local.url,
+      local.anonKey,
+      '/rest/v1/profiles?id=eq.' + other.id + '&select=id,role',
+      { token: student.accessToken },
+    );
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.data, []);
+  });
+
+  await t.test(
+    'browser token cannot change role/active/password flag or insert/delete rows',
+    async () => {
+      const patched = await localRequest(
         local.url,
         local.anonKey,
-        '/rest/v1/profiles?id=eq.' + other.id + '&select=id,role',
-        { token: student.accessToken },
-      );
-      assert.equal(response.status, 200);
-      assert.deepEqual(response.data, []);
-    });
-
-    await t.test(
-      'browser token cannot change role/active/password flag or insert/delete rows',
-      async () => {
-        const patched = await localRequest(
-          local.url,
-          local.anonKey,
-          '/rest/v1/profiles?id=eq.' + student.id,
-          {
-            method: 'PATCH',
-            token: student.accessToken,
-            body: { role: 'admin', active: true, must_change_password: false },
-          },
-        );
-        assert.ok(!patched.ok, 'PATCH must fail');
-        const inserted = await localRequest(local.url, local.anonKey, '/rest/v1/profiles', {
-          method: 'POST',
+        '/rest/v1/profiles?id=eq.' + student.id,
+        {
+          method: 'PATCH',
           token: student.accessToken,
-          body: {
-            id: student.id,
-            username: 'evil_user',
-            display_name: 'Privilege escalation',
-            role: 'admin',
-          },
-        });
-        assert.ok(!inserted.ok, 'INSERT must fail');
-        const deleted = await localRequest(
-          local.url,
-          local.anonKey,
-          '/rest/v1/profiles?id=eq.' + student.id,
-          {
-            method: 'DELETE',
-            token: student.accessToken,
-          },
-        );
-        assert.ok(!deleted.ok, 'DELETE must fail');
-        const result = await ownRows(student.accessToken);
-        assert.equal(result[0].role, 'student');
-      },
-    );
+          body: { role: 'admin', active: true, must_change_password: false },
+        },
+      );
+      assert.ok(!patched.ok, 'PATCH must fail');
+      const inserted = await localRequest(local.url, local.anonKey, '/rest/v1/profiles', {
+        method: 'POST',
+        token: student.accessToken,
+        body: {
+          id: student.id,
+          username: 'evil_user',
+          display_name: 'Privilege escalation',
+          role: 'admin',
+        },
+      });
+      assert.ok(!inserted.ok, 'INSERT must fail');
+      const deleted = await localRequest(
+        local.url,
+        local.anonKey,
+        '/rest/v1/profiles?id=eq.' + student.id,
+        {
+          method: 'DELETE',
+          token: student.accessToken,
+        },
+      );
+      assert.ok(!deleted.ok, 'DELETE must fail');
+      const result = await ownRows(student.accessToken);
+      assert.equal(result[0].role, 'student');
+    },
+  );
 
-    await t.test('no profile for an orphan Auth account yields no privileged data', async () => {
-      assert.deepEqual(await ownRows(orphan.accessToken), []);
-    });
+  await t.test('no profile for an orphan Auth account yields no privileged data', async () => {
+    assert.deepEqual(await ownRows(orphan.accessToken), []);
+  });
 
-    await t.test('deactivation blocks existing JWT immediately at database boundary', async () => {
-      await updatePrivileged(student.id, { active: false });
-      assert.deepEqual(await ownRows(student.accessToken), []);
-    });
+  await t.test('deactivation blocks existing JWT immediately at database boundary', async () => {
+    await updatePrivileged(student.id, { active: false });
+    assert.deepEqual(await ownRows(student.accessToken), []);
+  });
 
-    await t.test('anon bearer cannot read profiles', async () => {
-      const response = await localRequest(local.url, local.anonKey, '/rest/v1/profiles?select=id');
-      assert.ok(!response.ok || (Array.isArray(response.data) && response.data.length === 0));
-    });
+  await t.test('anon bearer cannot read profiles', async () => {
+    const response = await localRequest(local.url, local.anonKey, '/rest/v1/profiles?select=id');
+    assert.ok(!response.ok || (Array.isArray(response.data) && response.data.length === 0));
+  });
 });
