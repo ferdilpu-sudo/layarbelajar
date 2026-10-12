@@ -70,7 +70,9 @@ test('aksesibilitas tombol, input, chip, pilihan dan dialog', async ({ page }) =
   await page.keyboard.press('Tab');
   const focusStillInDialog = await page.evaluate(() => {
     const modal = document.querySelector('dialog');
-    return Boolean(modal && (modal === document.activeElement || modal.contains(document.activeElement)));
+    return Boolean(
+      modal && (modal === document.activeElement || modal.contains(document.activeElement)),
+    );
   });
   expect(focusStillInDialog).toBeTruthy();
   await page.keyboard.press('Escape');
