@@ -10,7 +10,10 @@ export default tseslint.config(
     files: ['supabase/functions/**/*.ts'],
     languageOptions: { globals: { Deno: 'readonly', ...globals.browser } },
   },
-  { files: ['scripts/**/*.mjs', 'tests/integration/**/*.mjs'], languageOptions: { globals: globals.node } },
+  {
+    files: ['scripts/**/*.mjs', 'tests/integration/**/*.mjs'],
+    languageOptions: { globals: globals.node },
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
