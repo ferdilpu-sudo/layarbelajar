@@ -117,7 +117,7 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     await page.getByRole('combobox', { name: 'Tindakan' }).selectOption('deactivate');
     page.once('dialog', (dialog) => void dialog.accept());
     await page.getByRole('button', { name: 'Jalankan' }).click();
-    await expect(page.getByText('Nonaktif', { exact: true })).toBeVisible();
+    await expect(page.locator('.lb-account-list').getByText(/Nonaktif/)).toBeVisible();
     await page.goto('/akun');
     await page.getByRole('button', { name: 'Keluar' }).click();
     await login(page, teacherUsername, resetPassword);
