@@ -89,7 +89,10 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     assert.match(teacherId, /^[0-9a-f-]{36}$/i);
     await page.getByRole('button', { name: 'Sembunyikan' }).click();
     await expect(
-      page.locator('.lb-account-list li').filter({ hasText: '@' + teacherUsername }).getByText('Guru Sintetis', { exact: true }),
+      page
+        .locator('.lb-account-list li')
+        .filter({ hasText: '@' + teacherUsername })
+        .getByText('Guru Sintetis', { exact: true }),
     ).toBeVisible();
 
     await page.getByRole('link', { name: /Kembali ke akun/ }).click();
@@ -126,7 +129,12 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     await page.getByRole('combobox', { name: 'Tindakan' }).selectOption('deactivate');
     page.once('dialog', (dialog) => void dialog.accept());
     await page.getByRole('button', { name: 'Jalankan' }).click();
-    await expect(page.locator('.lb-account-list li').filter({ hasText: '@' + teacherUsername }).getByText(/Nonaktif/)).toBeVisible();
+    await expect(
+      page
+        .locator('.lb-account-list li')
+        .filter({ hasText: '@' + teacherUsername })
+        .getByText(/Nonaktif/),
+    ).toBeVisible();
     await page.getByRole('link', { name: /Kembali ke akun/ }).click();
     await page.getByRole('button', { name: 'Keluar' }).click();
     await login(page, teacherUsername, resetPassword);
