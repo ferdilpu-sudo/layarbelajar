@@ -10,7 +10,9 @@ test('katalog publik dapat dicari, difilter, direset dan tanpa overflow', async 
   await expect(page.getByText('Belum ada konten yang cocok')).toBeVisible();
   await page.getByRole('button', { name: 'Tampilkan semua' }).click();
   await expect(page.getByText('6 contoh konten ditemukan.')).toBeVisible();
-  const noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+  const noOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth,
+  );
   expect(noOverflow).toBeTruthy();
 });
 

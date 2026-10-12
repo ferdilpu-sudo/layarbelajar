@@ -13,19 +13,34 @@ export function ContentDetailPage() {
     queryFn: () => fixtureCatalogRepository.getPublishedBySlug(slug),
   });
 
-  return <div className="container">
-    <Card className="page-panel">
-      <Link to="/">← Kembali ke katalog</Link>
-      {detail.isPending ? <p role="status">Memuat detail…</p>
-      : detail.isError ? <Alert>Detail tidak dapat dimuat. Coba buka kembali katalog.</Alert>
-      : !detail.data ? <Alert>Konten tidak ditemukan atau belum diterbitkan.</Alert>
-      : <>
-        <p><Badge kind={detail.data.kind}>{kindLabels[detail.data.kind]}</Badge></p>
-        <h1>{detail.data.title}</h1>
-        <p>{detail.data.level} · {detail.data.grade} · {detail.data.subject} · {detail.data.topic}</p>
-        <p>{detail.data.summary}</p>
-        <Alert tone="success">Ini pratinjau katalog menggunakan data contoh. Isi materi belum tersedia dan tidak ada nilai atau jawaban yang disimpan.</Alert>
-      </>}
-    </Card>
-  </div>;
+  return (
+    <div className="container">
+      <Card className="page-panel">
+        <Link to="/">← Kembali ke katalog</Link>
+        {detail.isPending ? (
+          <p role="status">Memuat detail…</p>
+        ) : detail.isError ? (
+          <Alert>Detail tidak dapat dimuat. Coba buka kembali katalog.</Alert>
+        ) : !detail.data ? (
+          <Alert>Konten tidak ditemukan atau belum diterbitkan.</Alert>
+        ) : (
+          <>
+            <p>
+              <Badge kind={detail.data.kind}>{kindLabels[detail.data.kind]}</Badge>
+            </p>
+            <h1>{detail.data.title}</h1>
+            <p>
+              {detail.data.level} · {detail.data.grade} · {detail.data.subject} ·{' '}
+              {detail.data.topic}
+            </p>
+            <p>{detail.data.summary}</p>
+            <Alert tone="success">
+              Ini pratinjau katalog menggunakan data contoh. Isi materi belum tersedia dan tidak ada
+              nilai atau jawaban yang disimpan.
+            </Alert>
+          </>
+        )}
+      </Card>
+    </div>
+  );
 }

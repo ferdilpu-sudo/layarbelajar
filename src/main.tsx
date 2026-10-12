@@ -6,7 +6,9 @@ import { App } from './app/App';
 import './styles/index.css';
 import './styles/print.css';
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 60_000 } } });
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1, staleTime: 60_000 } },
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -9,14 +9,21 @@ import { NotFoundPage } from './NotFoundPage';
 export function App() {
   return (
     <>
-      <a className="skip-link" href="#main-content">Langsung ke konten</a>
+      <a className="skip-link" href="#main-content">
+        Langsung ke konten
+      </a>
       <header className="site-header">
         <div className="container header-inner">
           <NavLink className="wordmark" to="/" aria-label="LayarBelajar, beranda">
-            <span className="wordmark-mark" aria-hidden="true">✦</span>{BRAND_NAME}
+            <span className="wordmark-mark" aria-hidden="true">
+              ✦
+            </span>
+            {BRAND_NAME}
           </NavLink>
           <nav className="header-nav" aria-label="Navigasi utama">
-            <NavLink end to="/">Katalog</NavLink>
+            <NavLink end to="/">
+              Katalog
+            </NavLink>
             <NavLink to="/gabung">Gabung sesi</NavLink>
             <NavLink to="/login">Masuk</NavLink>
           </nav>
@@ -33,7 +40,11 @@ export function App() {
           </Routes>
         </ErrorBoundary>
       </main>
-      <footer className="site-footer"><div className="container">{BRAND_NAME} · Katalog contoh tahap M-001 — belum terhubung ke layanan sekolah.</div></footer>
+      <footer className="site-footer">
+        <div className="container">
+          {BRAND_NAME} · Katalog contoh tahap M-001 — belum terhubung ke layanan sekolah.
+        </div>
+      </footer>
     </>
   );
 }
