@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('login form is accessible and does not promise fake authentication without env', async ({ page }) => {
+test('login form is accessible and does not promise fake authentication without env', async ({
+  page,
+}) => {
   await page.goto('/login');
   await expect(page.getByRole('heading', { name: 'Masuk ke LayarBelajar' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Username' })).toBeVisible();

@@ -11,12 +11,24 @@ export function AccountHomePage() {
     <div className="container">
       <Card className="page-panel">
         <h1>Halo, {session.identity.username}</h1>
-        <p>Role: {session.identity.role === 'admin' ? 'Admin' : session.identity.role === 'teacher' ? 'Guru' : 'Siswa'}.</p>
+        <p>
+          Role:{' '}
+          {session.identity.role === 'admin'
+            ? 'Admin'
+            : session.identity.role === 'teacher'
+              ? 'Guru'
+              : 'Siswa'}
+          .
+        </p>
         <p>Fitur kelas dan sesi belum tersedia (M-005). Akun Anda berhasil diautentikasi.</p>
         <div className="lb-account-links">
-          {session.identity.role === 'admin' ? <Link to="/admin/akun">Kelola akun guru dan siswa</Link> : null}
+          {session.identity.role === 'admin' ? (
+            <Link to="/admin/akun">Kelola akun guru dan siswa</Link>
+          ) : null}
           <Link to="/ganti-password">Ganti password</Link>
-          <Button variant="secondary" onClick={logout}>Keluar</Button>
+          <Button variant="secondary" onClick={logout}>
+            Keluar
+          </Button>
         </div>
       </Card>
     </div>

@@ -14,12 +14,14 @@ export function IdentityProvider({ children }: { children: ReactNode }) {
   // Browser reload requires sign-in again until production session refresh is designed and tested.
   const [session, setSession] = useState<Session | null>(null);
   return (
-    <IdentityContext.Provider value={{
-      session,
-      login: async (username, password) => setSession(await signIn(username, password)),
-      updateSession: setSession,
-      logout: () => setSession(null),
-    }}>
+    <IdentityContext.Provider
+      value={{
+        session,
+        login: async (username, password) => setSession(await signIn(username, password)),
+        updateSession: setSession,
+        logout: () => setSession(null),
+      }}
+    >
       {children}
     </IdentityContext.Provider>
   );
