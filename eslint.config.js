@@ -6,7 +6,14 @@ export default tseslint.config(
   { ignores: ['dist/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  { files: ['scripts/**/*.mjs'], languageOptions: { globals: globals.node } },
+  {
+    files: ['supabase/functions/**/*.ts'],
+    languageOptions: { globals: { Deno: 'readonly', ...globals.browser } },
+  },
+  {
+    files: ['scripts/**/*.mjs', 'tests/integration/**/*.mjs'],
+    languageOptions: { globals: globals.node },
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },

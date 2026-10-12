@@ -29,8 +29,15 @@ jobs:
         run: supabase start
       - name: Reapply clean migrations locally
         run: supabase db reset --local
+      - name: Start Edge Functions locally
+        run: |
+          supabase functions serve > /tmp/layarbelajar-edge.log 2>&1 &
+          echo $! > /tmp/layarbelajar-edge.pid
       - name: Auth alias and RLS negative integration checks
         run: npm run test:integration
+      - name: Report Edge startup diagnostics on failure
+        if: failure()
+        run: tail -80 /tmp/layarbelajar-edge.log || true
       - name: Stop local development containers
         if: always()
         run: supabase stop --no-backup || true
