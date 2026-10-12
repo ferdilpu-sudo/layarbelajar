@@ -26,3 +26,10 @@
 ## Tahap pra-penerimaan hosted (belum dieksekusi)
 
 Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub Actions preflight. Empat hasil probe (GoTrue health, anon RLS, CORS `account-admin` dan `change-password`) perlu PASS sebelum percobaan hosted yang dapat memutasi akun. Preflight tidak memakai key service role dan tidak dapat membuktikan aturan role administrasi atau refresh JWT. **Status: NOT RUN** hingga staging owner terhubung dan dispatch manual yang terotorisasi. Jangan jalankan ke project produksi.
+
+## Bukti konsolidasi PR #6
+
+- Code preflight manual serta runbook: [PR#6 — Merged](https://github.com/ferdilpu-sudo/layarbelajar/pull/6), commit `70ce905a`.
+- **Offline contract:** 5/5 PASS pada [CI 38261146059](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261146059).
+- **Main CI setelah merge:** [38261732399](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261732399) PASS.
+- **Staging read-only execution:** NOT RUN; project hosted belum dikonfirmasi tersedia/terhubung pada agent. **End-to-end hosted:** NOT RUN. Konfigurasi selanjutnya harus dilakukan pemilik pada GitHub environment `staging` atau melalui integrasi Supabase yang terhubung, tidak dengan mengirim secret ke chat.

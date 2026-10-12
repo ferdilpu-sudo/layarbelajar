@@ -134,3 +134,10 @@ Bukti CI: [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/action
 
 - `npm run test:staging-preflight` **PASS** dalam Foundation CI [run 38260925930](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38260925930), termasuk penolakan key service_role, URL non-hosted, origin non-HTTPS, kebocoran RLS anonim dan CORS origin asing. Ini **unit contract dengan mock fetch**, tidak pernah menyentuh staging asli.
 - Workflow preflight hosted **manual saja** dan tetap **NOT RUN**, karena tidak ada konfigurasi `staging` yang terverifikasi. M-002 **IN PROGRESS / NOT VERIFIED**. Temporary code formatter sudah dibersihkan dan workflow kembali ke `permissions: contents: read`.
+
+## Checkpoint final M-002 local vs hosted (12 Oktober 2026)
+
+- Main after PR#5 `7707d472` [CI 38259216276](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38259216276) PASS.
+- Main after PR#6 `70ce905a` [CI 38261732399](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261732399) PASS.
+- [PR#6 CI 38261146059](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261146059) PASS termasuk **5/5 offline staging preflight contract**, dan [backend 38261145983](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261145983) PASS. Script hosted read-only menyediakan 4 pemeriksaan sungguhan **HANYA jika staging dikonfigurasi dan workflow manual dijalankan**.
+- **Hosted/staging Auth/RLS/CORS/refresh: NOT RUN**, Windows bootstrap pemilik: NOT RUN; backup/restore cloud: NOT RUN. Local 19 integrasi + 12 browser tetap PASS sebagai bukti M-002 parsial. TEST-002 hosted tidak dapat ditutup dan M-002 NOT VERIFIED.
