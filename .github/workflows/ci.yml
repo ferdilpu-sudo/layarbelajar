@@ -26,6 +26,8 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm run test:unit
+      - name: Staging preflight contract (offline; no cloud calls)
+        run: npm run test:staging-preflight
       - name: Design token contrast
         run: npm run test:tokens
       - name: Build
