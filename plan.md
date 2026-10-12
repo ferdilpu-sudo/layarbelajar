@@ -1,6 +1,6 @@
 # Rencana Implementasi — LayarBelajar
 
-Status: **M-001 In progress** pada branch `feat/m001-foundation-catalog`; M-002 hingga M-007 **Not started**. Kode fondasi dan katalog fixture sudah ada di branch; aplikasi belum lulus gate, belum ada akun layanan atau deployment. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
+Status per 12 Oktober 2026: **M-001 Verified (fondasi + katalog fixture)** berdasarkan CI dan review screenshot; **M-002–M-007 Not started**. Verifikasi ini BUKAN klaim autentikasi, Supabase, katalog DB, kelas, penilaian, IFP nyata, atau produksi sudah tersedia. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
 
 ## Milestone dan gate
 
@@ -84,3 +84,13 @@ TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state,
 - Commit kode terakhir untuk gate: `f542fc4cb6caeab1f715c6bfc86b4fd1ef0ba616`.
 - GitHub Actions [run 38205529972](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205529972): **PASS** `npm ci`, `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit` (3), `npm run test:tokens` (12), `npm run build` dan `npm run test:e2e` (4 tes). CI sekarang read-only dan lockfile terkunci di git.
 - TASK-005 **PASS untuk otomatisasi fixture yang tersedia**, bukan acceptance penuh M-001. TASK-017 **TODO**: fixture seluruh state komponen, baseline visual yang direview, viewport 768/1920, audit kontrol/fokus/selected dan kontras terhadap thumbnail. M-001 tetap **In progress / NOT VERIFIED**. Tidak ada implementasi atau pengujian integrasi Supabase pada checkpoint ini.
+
+## M-001 Verified — checkpoint penutup 12 Oktober 2026
+
+- Implementasi PR [#1](https://github.com/ferdilpu-sudo/layarbelajar/pull/1), commit sumber untuk gate `d9699a740f4c22f2e1c31ff236988cc73b93e7bc`.
+- GitHub Actions [run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678): **PASS** `npm ci`, `npm audit --omit=dev --audit-level=high` (0 vulnerabilities), `npm run format:check`, lint, typecheck, **3 Vitest**, token contrast (12 pasangan), production build, dan **20 Chromium Playwright E2E** pada 360/768/1280/1920 px. Screenshot setiap viewport berhasil diambil sebagai artifact `m001-ui-review-screenshots`.
+- TASK-001 **Done**: inventaris spec dan pilihan Node 24; TASK-002 **Done**: React/Vite/TS/Tailwind scaffolding + lockfile + CI; TASK-003 **Done untuk fixture**: repository port, filter gabungan, empty/error/loading, test UI; TASK-004 **Done untuk shell**: brand/tokens/components; TASK-005 **Done**: gate otomatis berjalan; TASK-017 **Done untuk state komponen M-001**: fixture dev-only, Button/Input/AnswerOption/FilterChip/Alert/Dialog, selected/error/disabled/loading/focus, preview empat kategori, screenshot 4 viewport ditinjau visual.
+- Review manusia terhadap screenshot hasil CI: 360/768/1280/1920 px tidak memperlihatkan overlap/teks terpotong/overflow; wordmark, warna, label dan hard shadow sesuai arah design.md. Perilaku modal Tab/Escape dan kembalinya fokus diuji E2E; disabled text memakai pasangan `--lb-muted`/`--lb-canvas` yang telah lolos kontras. Print/reduced motion diuji melalui computed styles pada fixture.
+- **Lingkup bukti**: TEST-001 sebagian **PASS pada katalog fixture saja**; tidak ada RLS/DB. TEST-014 sebagian **PASS pada komponen/shell M-001**; layout layar admin/IFP/hasil, touch real-device, dan cetak LKPD nyata masih **NOT RUN**. Tidak ada klaim seluruh REQ/AC/TEST production complete.
+- Risiko operasional: login dan gabung tetap placeholder; backend, akun, data nyata, Storage, restore, dan deployment belum dikerjakan. Fitur dev fixture `/__ui` tersedia hanya saat `import.meta.env.DEV`; tidak ditautkan di navigasi.
+- **Next: M-002 / TASK-006**. Mulai Supabase lokal, migrasi `profiles` dan peran, bootstrap admin, uji username alias `@accounts.invalid` dengan Auth sesungguhnya dan RLS negatif. Jika Docker/Supabase local tidak tersedia, sediakan migrasi dan test tanpa memalsukan PASS integrasi. Jangan meminta kredensial lewat chat.

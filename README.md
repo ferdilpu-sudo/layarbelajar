@@ -21,8 +21,8 @@ Repositori tujuan: https://github.com/ferdilpu-sudo/layarbelajar.git. README ada
 |---|---|
 | Wawancara, kebutuhan, stack dan arah desain | Selesai; disetujui pemilik |
 | Dokumen | Sepuluh Markdown versi 2, API direncanakan tetap v1 |
-| Implementasi aplikasi | M-001 In progress di branch fitur, scaffold dan katalog fixture |
-| Build, lint, test aplikasi | PASS terbatas pada GitHub Actions untuk fixture: lint, typecheck, unit 3, build dan Playwright 4; lingkungan penulis masih offline |
+| Implementasi aplikasi | M-001 Verified: scaffold, katalog fixture, shell dan komponen v2; M-002 berikutnya |
+| Build, lint, test aplikasi | PASS M-001: format, lint, typecheck, unit 3, 20 E2E Chromium (4 viewport), token contrast, build, npm audit runtime; belum tes Supabase |
 | Backend/hosting/akun layanan | Belum dikonfigurasi dalam pekerjaan ini |
 | Pemeriksaan yang sudah dilakukan | Nama file, link dokumen, pemetaan REQ/AC/TEST, dan kontras token warna |
 | Deployment dan domain | Belum ada; jangan mengarang URL aplikasi aktif |
@@ -125,7 +125,7 @@ Admin menambah taxonomy → materi/soal/LKPD/game → pratinjau → terbit. Guru
 
 PDF tampil langsung, PPT/PPTX unduhan dengan PDF pendamping manual, video berupa tautan, dan cetak melalui browser. Paket gratis mempunyai batas dan potensi jeda ketika tidak aktif; jadwalkan pemeriksaan sebelum kelas dan backup manual sebagaimana ADR-007. Tidak ada biaya yang telah diaktifkan dan tidak ada klaim uptime.
 
-Langkah berikut untuk AI coding agent: lanjutkan **M-001 / TASK-002** dan gate M-001, lihat checkpoint di plan.md. Nama LayarBelajar dan arah soft brutalism sudah ditetapkan. Perangkat IFP aktual dan kredensial layanan dapat dilengkapi kemudian; tidak perlu mengulang wawancara fitur yang sudah diputuskan.
+Langkah berikut untuk AI coding agent: mulai **M-002 / TASK-006**, lihat checkpoint penutup M-001 di plan.md. Nama LayarBelajar dan arah soft brutalism sudah ditetapkan. Perangkat IFP aktual dan kredensial layanan dapat dilengkapi kemudian; tidak perlu mengulang wawancara fitur yang sudah diputuskan.
 
 ## Pembaruan v2
 
@@ -154,3 +154,9 @@ npm run test:e2e
 Commit `package-lock.json` setelah `npm install`, dan ubah CI agar menggunakan `npm ci` murni. `npm run test:integration` sengaja gagal dengan status NOT RUN sampai Supabase lokal dan migrasi tersedia pada M-002. Tidak ada tes atau perintah di atas yang dapat dinyatakan PASS berdasarkan dokumen saja.
 
 **Update CI 12 Oktober 2026:** `package-lock.json` kini telah di-commit di branch melalui GitHub Actions. CI awal membuktikan `npm ci`, lint, typecheck, 3 unit, 12 kontras token, build dan 4 browser E2E PASS: https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969. Workflow final memakai `npm ci` saja. Pengujian penuh TEST-001..014, IFP aktual dan backend belum dinyatakan lulus.
+
+### Bukti penutupan M-001 dan langkah lanjutan
+
+Fondasi diuji pada [CI run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678): npm ci, dependency audit 0 temuan, format, lint, TypeScript, 3 unit tests, kontras token, build dan 20 Playwright E2E PASS. Screenshot visual empat viewport sudah ditinjau, bukan baseline yang auto-approved melalui perubahan buta. Fixture state komponen tersedia pada `/__ui` **hanya dalam mode development**; rute produksi mengembalikan not-found.
+
+M-001 Verified **tidak** menutup keseluruhan TEST-001/014: Supabase/RLS belum dibangun, dan layar admin, game/IFP, LKPD/print nyata serta perangkat aktual masih harus dites pada milestone masing-masing. Mulai TASK-006 dengan Supabase lokal, akun username alias dan migrasi role/RLS tanpa menambahkan email pribadi siswa secara sepihak.
