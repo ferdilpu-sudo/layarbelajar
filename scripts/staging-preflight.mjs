@@ -56,7 +56,8 @@ export function validateHostedConfig(env) {
   // contract requires the legacy anon JWT, not a new opaque publishable key.
   // Do not allow a service_role JWT even when it was mistakenly configured.
   const chunks = key.split('.');
-  if (chunks.length !== 3) fail('Expected legacy anon JWT; opaque publishable keys are not yet supported.');
+  if (chunks.length !== 3)
+    fail('Expected legacy anon JWT; opaque publishable keys are not yet supported.');
   let payload;
   try {
     payload = JSON.parse(Buffer.from(chunks[1], 'base64url').toString('utf8'));
@@ -129,7 +130,11 @@ export async function checkHostedStaging(config, fetcher = fetch) {
     if (allowed.headers.get('access-control-allow-origin') !== config.origin) {
       fail(name + ': missing exact approved-origin CORS header.');
     }
-    if (!String(allowed.headers.get('access-control-allow-headers') ?? '').toLowerCase().includes('authorization')) {
+    if (
+      !String(allowed.headers.get('access-control-allow-headers') ?? '')
+        .toLowerCase()
+        .includes('authorization')
+    ) {
       fail(name + ': authorization header not allowed in CORS.');
     }
     const blocked = await limitedFetch(fetcher, path, {
@@ -156,14 +161,20 @@ export async function main(env = process.env, fetcher = fetch) {
     console.log('PASS staging-readonly ' + report);
   }
   console.log('STAGING_READONLY_PASS: ' + reports.length + ' non-mutating checks.');
-  console.log('PENDING: hosted account lifecycle, token rotation, interactive bootstrap, backups and owner signoff.');
+  console.log(
+    'PENDING: hosted account lifecycle, token rotation, interactive bootstrap, backups and owner signoff.',
+  );
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   main().catch((error) => {
     // Do not echo URLs, tokens, backend response bodies or other sensitive details.
     const text = error instanceof Error ? error.message : 'Unexpected staging preflight error.';
-    console.error(text.startsWith('STAGING_PREFLIGHT_BLOCKED:') ? text : 'STAGING_PREFLIGHT_FAILED: network or endpoint check failed.');
+    console.error(
+      text.startsWith('STAGING_PREFLIGHT_BLOCKED:')
+        ? text
+        : 'STAGING_PREFLIGHT_FAILED: network or endpoint check failed.',
+    );
     process.exitCode = 1;
   });
 }
