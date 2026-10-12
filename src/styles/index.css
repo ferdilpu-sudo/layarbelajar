@@ -193,7 +193,9 @@ main {
 }
 .lb-button:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  color: var(--lb-muted);
+  background: var(--lb-canvas);
+  box-shadow: none;
 }
 .lb-button--secondary {
   background: white;

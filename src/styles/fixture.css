@@ -41,7 +41,9 @@
   background: var(--lb-worksheet);
 }
 .lb-answer-option:disabled {
-  opacity: 0.65;
+  color: var(--lb-muted);
+  background: var(--lb-canvas);
+  box-shadow: none;
   cursor: not-allowed;
 }
 .lb-answer-check {
