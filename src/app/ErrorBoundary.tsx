@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import { Alert } from '../shared/ui/Alert';
 
 interface State { failed: boolean }
@@ -8,10 +8,6 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
 
   static getDerivedStateFromError(): State {
     return { failed: true };
-  }
-
-  componentDidCatch(_error: Error, _info: ErrorInfo): void {
-    // Jangan log payload, token atau data privat ke konsol produksi.
   }
 
   render() {
