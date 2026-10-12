@@ -22,7 +22,10 @@ export function IdentityProvider({ children }: { children: ReactNode }) {
         logout: () => {
           const token = session?.accessToken;
           setSession(null);
-          if (token) void revokeSession(token).catch(() => { /* no token remains in client state */ });
+          if (token)
+            void revokeSession(token).catch(() => {
+              /* no token remains in client state */
+            });
         },
       }}
     >

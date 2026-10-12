@@ -24,10 +24,16 @@ export function AdminAccountsPage() {
   useEffect(() => {
     if (!accessToken || currentRole !== 'admin') return;
     let active = true;
-    void functionCall(accessToken, 'account-admin', { action: 'list' }).then((data) => {
-      if (active && Array.isArray(data.items)) setAccounts(data.items as ManagedAccount[]);
-    }).catch(() => { /* status surfaced by explicit actions */ });
-    return () => { active = false; };
+    void functionCall(accessToken, 'account-admin', { action: 'list' })
+      .then((data) => {
+        if (active && Array.isArray(data.items)) setAccounts(data.items as ManagedAccount[]);
+      })
+      .catch(() => {
+        /* status surfaced by explicit actions */
+      });
+    return () => {
+      active = false;
+    };
   }, [accessToken, currentRole]);
   if (!session) return <Navigate to="/login" replace />;
   if (session.identity.must_change_password) return <Navigate to="/ganti-password" replace />;
@@ -46,9 +52,13 @@ export function AdminAccountsPage() {
         'Operasi akun berhasil. Simpan password sementara sekarang jika ada; tidak akan ditampilkan ulang.',
       );
       setUserId(typeof data.id === 'string' ? data.id : '');
-      void functionCall(session!.accessToken, 'account-admin', { action: 'list' }).then((listing) => {
-        if (Array.isArray(listing.items)) setAccounts(listing.items as ManagedAccount[]);
-      }).catch(() => { /* action completed; list can be retried on reload */ });
+      void functionCall(session!.accessToken, 'account-admin', { action: 'list' })
+        .then((listing) => {
+          if (Array.isArray(listing.items)) setAccounts(listing.items as ManagedAccount[]);
+        })
+        .catch(() => {
+          /* action completed; list can be retried on reload */
+        });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Operasi akun gagal.');
     } finally {
@@ -115,9 +125,7 @@ export function AdminAccountsPage() {
         </Card>
         <Card className="lb-account-panel">
           <h2>Reset / nonaktifkan akun</h2>
-          <p>
-            Pilih akun dari daftar di bawah atau masukkan ID jika sudah diketahui.
-          </p>
+          <p>Pilih akun dari daftar di bawah atau masukkan ID jika sudah diketahui.</p>
           <form className="lb-account-form" onSubmit={manage}>
             <Input
               label="ID akun"
@@ -147,12 +155,20 @@ export function AdminAccountsPage() {
       </div>
       <section aria-labelledby="accounts-list-title" className="lb-account-list">
         <h2 id="accounts-list-title">Daftar akun guru dan siswa</h2>
-        {accounts.length === 0 ? <p>Belum ada akun atau daftar belum dapat dimuat.</p> : (
+        {accounts.length === 0 ? (
+          <p>Belum ada akun atau daftar belum dapat dimuat.</p>
+        ) : (
           <ul>
             {accounts.map((account) => (
               <li key={account.id}>
-                <span><strong>{account.display_name}</strong> (@{account.username}) — {account.role === 'teacher' ? 'Guru' : 'Siswa'} · {account.active ? 'Aktif' : 'Nonaktif'}</span>
-                <Button variant="secondary" onClick={() => setUserId(account.id)}>Pilih akun</Button>
+                <span>
+                  <strong>{account.display_name}</strong> (@{account.username}) —{' '}
+                  {account.role === 'teacher' ? 'Guru' : 'Siswa'} ·{' '}
+                  {account.active ? 'Aktif' : 'Nonaktif'}
+                </span>
+                <Button variant="secondary" onClick={() => setUserId(account.id)}>
+                  Pilih akun
+                </Button>
               </li>
             ))}
           </ul>
