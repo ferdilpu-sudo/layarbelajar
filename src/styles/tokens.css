@@ -1,0 +1,21 @@
+:root {
+  --lb-canvas: #fff9f0;
+  --lb-surface: #ffffff;
+  --lb-ink: #242424;
+  --lb-muted: #595959;
+  --lb-material: #bfdbfe;
+  --lb-worksheet: #bfe8d5;
+  --lb-exercise: #fde68a;
+  --lb-game: #ddd6fe;
+  --lb-success-bg: #dcfce7;
+  --lb-success-text: #166534;
+  --lb-error-bg: #fee2e2;
+  --lb-error-text: #991b1b;
+  --lb-focus: #1d4ed8;
+  --lb-border: 2px solid var(--lb-ink);
+  --lb-radius-control: 12px;
+  --lb-radius-card: 16px;
+  --lb-shadow: 4px 4px 0 var(--lb-ink);
+  --lb-shadow-emphasis: 6px 6px 0 var(--lb-ink);
+  --lb-shadow-mobile: 2px 2px 0 var(--lb-ink);
+}

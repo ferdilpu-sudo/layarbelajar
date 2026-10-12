@@ -1,6 +1,6 @@
 # Rencana Implementasi — LayarBelajar
 
-Status: seluruh milestone **Not started**. Paket ini handoff spesifikasi; belum ada source aplikasi, akun layanan atau deployment. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
+Status per 12 Oktober 2026: **M-001 Verified (fondasi + katalog fixture)** berdasarkan CI dan review screenshot; **M-002–M-007 Not started**. Verifikasi ini BUKAN klaim autentikasi, Supabase, katalog DB, kelas, penilaian, IFP nyata, atau produksi sudah tersedia. Kerjakan bertahap dengan fitur vertikal yang dapat diuji. Semua Must pada [prd](./prd.md) diperlukan untuk rilis siap pakai, bukan hanya halaman katalog.
 
 ## Milestone dan gate
 
@@ -58,4 +58,39 @@ Definition of done setiap increment: perilaku sesuai REQ/AC, test bermakna, erro
 
 REQ-014 dikerjakan lintas milestone, bukan fase redesign setelah aplikasi selesai. Pada M-001 jalankan TASK-004 termasuk tokens.css, komponen dan brand.ts. M-003 memakai komponen tersebut pada editor/katalog nyata; M-004 menerapkan mode IFP, wrapper game dan print tanpa shadow; M-005/M-006 menerapkan opsi jawaban, status tersimpan, penilaian dan tabel yang rapi; M-007 menuntaskan TEST-014 semua layar/perangkat.
 
-TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state, hitung kontras token, cek mapping jenis konten dan snapshot awal yang direview. TASK-018 (bagian M-007, bergantung TASK-015): audit TEST-014 end-to-end di HP/IFP/cetak, catat bukti sebelum rilis. Nomor tugas bukan urutan eksekusi; dependensi milestone menentukan urutan. Semua tugas implementasi tetap Not started.
+TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state, hitung kontras token, cek mapping jenis konten dan snapshot awal yang direview. TASK-018 (bagian M-007, bergantung TASK-015): audit TEST-014 end-to-end di HP/IFP/cetak, catat bukti sebelum rilis. Nomor tugas bukan urutan eksekusi; dependensi milestone menentukan urutan. TASK-001 sudah melakukan inventaris dan riset kompatibilitas; TASK-002/003/004 In progress pada branch fitur; TASK-005/017 belum Verified.
+
+## Checkpoint 12 Oktober 2026 — M-001 In progress
+
+- Baseline main `9411632ab4730b55ca1d9342cd05433dedcb002c`, seluruh 10 dokumen spesifikasi tetap dipertahankan.
+- TASK-001: dokumen, struktur dan dependensi dibaca; Node.js 24 Active LTS dan rilis Vite 8.3.4, Vitest 5.0.3 diverifikasi dari sumber resmi. Node lokal 22.16.0 dan npm 10.9.2 terdeteksi. Seluruh versi dependency yang terpasang **belum** diverifikasi.
+- TASK-002: scaffold React/Vite/TS/Tailwind, konfigurasi strict type, ESLint/Prettier, Vitest/Playwright, Cloudflare SPA fallback dan CI awal tersedia di branch. `package-lock.json` **belum ada** karena akses DNS `registry.npmjs.org` gagal pada lingkungan penulis. CI sementara membuat candidate lock dan artefak, bukan pengganti committed lock. `npm ci`, build, lint, format, typecheck, unit dan E2E: **NOT RUN** pada lingkungan penulis.
+- TASK-003: domain dan repository port katalog, fixture sintetis, pencarian dan kombinasi filter, reset, loading/error/empty dan test awal telah ditulis. Integrasi Supabase/RLS TEST-001 belum dimulai.
+- TASK-004: token design.md, komponen bersama, wordmark, shell responsif, focus/reduced motion dan print dasar telah ditulis. TEST-014 HP/IFP/aksesibilitas belum dijalankan. Halaman login dan gabung hanya placeholder, bukan autentikasi/sesi aktif.
+- TASK-005 dan TASK-017: **NOT STARTED** untuk gate lengkap dan audit visual. **M-001 NOT VERIFIED**; M-002 dan seterusnya tidak dimulai.
+
+**Next:** pada lingkungan dengan npm registry, jalankan `npm install` lalu commit `package-lock.json`, hilangkan langkah generate-lock sementara dari CI, gunakan `npm ci`, jalankan format-check/lint/typecheck/unit/build/E2E, perbaiki semua kegagalan, lalu jalankan TASK-017 sebelum gate M-001.
+
+### Checkpoint terverifikasi berikutnya — 12 Oktober 2026
+
+- Branch fitur menerima lockfile yang dihasilkan npm melalui workflow, dan source otomatis diformat (kedua perubahan masuk commit pada branch). Langkah generate-lock/format sekali saja kemudian dicabut dari workflow; CI akhir menggunakan `npm ci` dan permission `contents: read`.
+- GitHub Actions run [38205275969](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969): **PASS** npm ci, lint, typecheck, 3 unit test, 12 pasang warna token, production build Vite, dan 4 tes Playwright Chromium (360 px dan 1280 px). Bukti ini untuk katalog fixture saja.
+- Run [38205430420](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205430420): format-check, lint, typecheck, unit, kontras, build telah PASS saat dicatat; E2E masih berjalan ketika checkpoint ini ditulis. Jangan mengubah hasil yang belum diketahui menjadi PASS.
+- TASK-002: source+lockfile sudah tersedia dan CI penting pernah PASS. TASK-003/004: UI fixture teruji terbatas. TASK-005: **IN PROGRESS** sampai CI akhir setelah pembersihan workflow dan seluruh gate M-001 tercatat. TASK-017: **TODO**, buat fixture seluruh state, screenshot baseline dan verifikasi 360/768/1280/1920; IFP aktual tetap M-007.
+- Semua TEST-001/014 penuh, Supabase/RLS dan integrasi kelas tetap **NOT RUN**. M-001 tetap belum Verified.
+
+### Final gate otomatis setelah normalisasi CI — 12 Oktober 2026
+
+- Commit kode terakhir untuk gate: `f542fc4cb6caeab1f715c6bfc86b4fd1ef0ba616`.
+- GitHub Actions [run 38205529972](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205529972): **PASS** `npm ci`, `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit` (3), `npm run test:tokens` (12), `npm run build` dan `npm run test:e2e` (4 tes). CI sekarang read-only dan lockfile terkunci di git.
+- TASK-005 **PASS untuk otomatisasi fixture yang tersedia**, bukan acceptance penuh M-001. TASK-017 **TODO**: fixture seluruh state komponen, baseline visual yang direview, viewport 768/1920, audit kontrol/fokus/selected dan kontras terhadap thumbnail. M-001 tetap **In progress / NOT VERIFIED**. Tidak ada implementasi atau pengujian integrasi Supabase pada checkpoint ini.
+
+## M-001 Verified — checkpoint penutup 12 Oktober 2026
+
+- Implementasi PR [#1](https://github.com/ferdilpu-sudo/layarbelajar/pull/1), commit sumber untuk gate `d9699a740f4c22f2e1c31ff236988cc73b93e7bc`.
+- GitHub Actions [run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678): **PASS** `npm ci`, `npm audit --omit=dev --audit-level=high` (0 vulnerabilities), `npm run format:check`, lint, typecheck, **3 Vitest**, token contrast (12 pasangan), production build, dan **20 Chromium Playwright E2E** pada 360/768/1280/1920 px. Screenshot setiap viewport berhasil diambil sebagai artifact `m001-ui-review-screenshots`.
+- TASK-001 **Done**: inventaris spec dan pilihan Node 24; TASK-002 **Done**: React/Vite/TS/Tailwind scaffolding + lockfile + CI; TASK-003 **Done untuk fixture**: repository port, filter gabungan, empty/error/loading, test UI; TASK-004 **Done untuk shell**: brand/tokens/components; TASK-005 **Done**: gate otomatis berjalan; TASK-017 **Done untuk state komponen M-001**: fixture dev-only, Button/Input/AnswerOption/FilterChip/Alert/Dialog, selected/error/disabled/loading/focus, preview empat kategori, screenshot 4 viewport ditinjau visual.
+- Review manusia terhadap screenshot hasil CI: 360/768/1280/1920 px tidak memperlihatkan overlap/teks terpotong/overflow; wordmark, warna, label dan hard shadow sesuai arah design.md. Perilaku modal Tab/Escape dan kembalinya fokus diuji E2E; disabled text memakai pasangan `--lb-muted`/`--lb-canvas` yang telah lolos kontras. Print/reduced motion diuji melalui computed styles pada fixture.
+- **Lingkup bukti**: TEST-001 sebagian **PASS pada katalog fixture saja**; tidak ada RLS/DB. TEST-014 sebagian **PASS pada komponen/shell M-001**; layout layar admin/IFP/hasil, touch real-device, dan cetak LKPD nyata masih **NOT RUN**. Tidak ada klaim seluruh REQ/AC/TEST production complete.
+- Risiko operasional: login dan gabung tetap placeholder; backend, akun, data nyata, Storage, restore, dan deployment belum dikerjakan. Fitur dev fixture `/__ui` tersedia hanya saat `import.meta.env.DEV`; tidak ditautkan di navigasi.
+- **Next: M-002 / TASK-006**. Mulai Supabase lokal, migrasi `profiles` dan peran, bootstrap admin, uji username alias `@accounts.invalid` dengan Auth sesungguhnya dan RLS negatif. Jika Docker/Supabase local tidak tersedia, sediakan migrasi dan test tanpa memalsukan PASS integrasi. Jangan meminta kredensial lewat chat.

@@ -1,0 +1,34 @@
+@media print {
+  :root {
+    --lb-canvas: #fff;
+    --lb-surface: #fff;
+    --lb-ink: #000;
+    --lb-shadow: none;
+    --lb-shadow-mobile: none;
+    --lb-shadow-emphasis: none;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  .site-header,
+  .site-footer,
+  .filters,
+  .chips,
+  .lb-button,
+  .skip-link {
+    display: none !important;
+  }
+  .lb-card,
+  .lb-alert {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .container {
+    width: 100%;
+  }
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+}

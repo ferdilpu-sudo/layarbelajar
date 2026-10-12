@@ -2,7 +2,7 @@
 
 Bank materi dan game milik admin untuk pengajaran di IFP serta latihan/LKPD siswa melalui HP, dengan katalog publik dan sesi kelas berkode.
 
-**Status: specification only, v2 — 12 Oktober 2026.** Folder ini berisi tepat 10 dokumen handoff. Source aplikasi, package.json, database, akun layanan, dan deployment belum dibuat. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
+**Status: M-001 Verified untuk fondasi/katalog fixture — 12 Oktober 2026.** Sepuluh dokumen handoff tetap ada. Scaffold React, katalog contoh dan komponen soft brutalism telah lulus gate CI otomatis serta review empat viewport; belum ada backend, autentikasi nyata atau deployment. Spesifikasi disetujui; kesiapan penggunaan nyata harus dibuktikan melalui implementasi dan [testing](./testing.md).
 
 ## Mulai di sini — untuk agent berikutnya
 
@@ -21,8 +21,8 @@ Repositori tujuan: https://github.com/ferdilpu-sudo/layarbelajar.git. README ada
 |---|---|
 | Wawancara, kebutuhan, stack dan arah desain | Selesai; disetujui pemilik |
 | Dokumen | Sepuluh Markdown versi 2, API direncanakan tetap v1 |
-| Implementasi aplikasi | Belum dimulai; M-001/TASK-001 adalah langkah pertama |
-| Build, lint, test aplikasi | NOT RUN; package.json belum tersedia |
+| Implementasi aplikasi | M-001 Verified: scaffold, katalog fixture, shell dan komponen v2; M-002 berikutnya |
+| Build, lint, test aplikasi | PASS M-001: format, lint, typecheck, unit 3, 20 E2E Chromium (4 viewport), token contrast, build, npm audit runtime; belum tes Supabase |
 | Backend/hosting/akun layanan | Belum dikonfigurasi dalam pekerjaan ini |
 | Pemeriksaan yang sudah dilakukan | Nama file, link dokumen, pemetaan REQ/AC/TEST, dan kontras token warna |
 | Deployment dan domain | Belum ada; jangan mengarang URL aplikasi aktif |
@@ -125,10 +125,38 @@ Admin menambah taxonomy → materi/soal/LKPD/game → pratinjau → terbit. Guru
 
 PDF tampil langsung, PPT/PPTX unduhan dengan PDF pendamping manual, video berupa tautan, dan cetak melalui browser. Paket gratis mempunyai batas dan potensi jeda ketika tidak aktif; jadwalkan pemeriksaan sebelum kelas dan backup manual sebagaimana ADR-007. Tidak ada biaya yang telah diaktifkan dan tidak ada klaim uptime.
 
-Langkah berikut untuk AI coding agent: mulai **M-001 / TASK-001**. Nama LayarBelajar dan arah soft brutalism sudah ditetapkan. Perangkat IFP aktual dan kredensial layanan dapat dilengkapi kemudian; tidak perlu mengulang wawancara fitur yang sudah diputuskan.
+Langkah berikut untuk AI coding agent: mulai **M-002 / TASK-006**, lihat checkpoint penutup M-001 di plan.md. Nama LayarBelajar dan arah soft brutalism sudah ditetapkan. Perangkat IFP aktual dan kredensial layanan dapat dilengkapi kemudian; tidak perlu mengulang wawancara fitur yang sudah diputuskan.
 
 ## Pembaruan v2
 
 Seluruh sepuluh dokumen kini memakai nama **LayarBelajar** dan arah **soft brutalism**: krem/pastel, garis arang, bayangan tegas, sudut lembut dan kontrol sentuh besar. [design.md](./design.md) menjadi acuan warna, ukuran, komponen, states, HP/IFP dan cetak. REQ-014/AC-014/TEST-014 serta ADR-009 mengikat penerapannya ke plan dan quality gates.
 
 Nilai warna/ukuran adalah default implementasi terdefinisi, bukan aset mockup atau UI yang sudah dibangun. Wordmark teks cukup untuk mulai; tagline bersifat opsional. Schema API tetap v1, dokumen v2 tidak berarti API breaking change. Gunakan sepuluh file paket terbaru bersama-sama agar tidak mencampur instruksi visual v1 dengan v2.
+
+## Menjalankan implementasi awal (branch M-001)
+
+Source React/Vite berada di branch `feat/m001-foundation-catalog`. Katalog menggunakan data **fixture saja**; detail konten merupakan contoh, sementara login/gabung belum aktif. `/login` dan `/gabung` bukan formulir yang benar-benar memproses akun.
+
+Setelah komputer dapat mengakses npm registry dan memakai Node.js 24 LTS, jalankan:
+
+```bash
+npm install
+npm run format
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+Commit `package-lock.json` setelah `npm install`, dan ubah CI agar menggunakan `npm ci` murni. `npm run test:integration` sengaja gagal dengan status NOT RUN sampai Supabase lokal dan migrasi tersedia pada M-002. Tidak ada tes atau perintah di atas yang dapat dinyatakan PASS berdasarkan dokumen saja.
+
+**Update CI 12 Oktober 2026:** `package-lock.json` kini telah di-commit di branch melalui GitHub Actions. CI awal membuktikan `npm ci`, lint, typecheck, 3 unit, 12 kontras token, build dan 4 browser E2E PASS: https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969. Workflow final memakai `npm ci` saja. Pengujian penuh TEST-001..014, IFP aktual dan backend belum dinyatakan lulus.
+
+### Bukti penutupan M-001 dan langkah lanjutan
+
+Fondasi diuji pada [CI run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678): npm ci, dependency audit 0 temuan, format, lint, TypeScript, 3 unit tests, kontras token, build dan 20 Playwright E2E PASS. Screenshot visual empat viewport sudah ditinjau, bukan baseline yang auto-approved melalui perubahan buta. Fixture state komponen tersedia pada `/__ui` **hanya dalam mode development**; rute produksi mengembalikan not-found.
+
+M-001 Verified **tidak** menutup keseluruhan TEST-001/014: Supabase/RLS belum dibangun, dan layar admin, game/IFP, LKPD/print nyata serta perangkat aktual masih harus dites pada milestone masing-masing. Mulai TASK-006 dengan Supabase lokal, akun username alias dan migrasi role/RLS tanpa menambahkan email pribadi siswa secara sepihak.

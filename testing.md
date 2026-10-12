@@ -2,7 +2,7 @@
 
 Versi dokumen 2 — identitas LayarBelajar dan arah soft brutalism.
 
-Status semua test: **NOT RUN — implementasi belum tersedia**. Dokumen ini mendefinisikan penerimaan, bukan bukti aplikasi sudah siap produksi. Penanggung jawab otomatisasi: AI coding agent/developer. Uji perangkat kelas dan penerimaan pembelajaran: pemilik produk.
+Status: **M-001 fixture/unit/E2E sebagian PASS**; full acceptance TEST-001..014 masih memerlukan integrasi backend dan perangkat. Dokumen ini bukan bukti aplikasi sudah siap produksi. Penanggung jawab otomatisasi: AI coding agent/developer. Uji perangkat kelas dan penerimaan pembelajaran: pemilik produk.
 
 ## Strategi dan lingkungan
 
@@ -81,3 +81,19 @@ Catat pada laporan milestone: tanggal, commit, lingkungan/browser/perangkat, per
 6. Jalankan TEST-007 bersama audit shell game: gaya baru tidak mengubah sandbox, CSP, perilaku fullscreen atau akses token. Isi game boleh berbeda gaya tanpa membuat test visual shell gagal.
 
 Status tetap NOT RUN untuk seluruh pengujian UI aplikasi sampai implementasi tersedia. Validasi hitung kontras token pada dokumen bukan bukti bahwa layout dan aksesibilitas runtime sudah lulus.
+
+## Checkpoint M-001: status pengujian awal (12 Oktober 2026)
+
+Source unit test filter katalog dan Playwright E2E fixture sudah ditulis di branch fitur, tetapi **belum dieksekusi** karena dependency install terhambat DNS registry npm. Lint/typecheck/build/format/test serta audit kontras, viewport IFP, dan RLS tetap **NOT RUN**. CI baru menyediakan percobaan awal, bukan bukti PASS. TEST-001 belum lengkap (belum ada DB/RLS), dan TEST-014 belum memenuhi gate perangkat/komponen.
+
+### Hasil aktual lintas checker untuk katalog fixture — 12 Oktober 2026
+
+Github Actions run [38205275969](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205275969) berhasil: `npm ci`, ESLint, strict TypeScript, **3 Vitest unit**, **12 kontras token**, production build, serta **4 Playwright Chromium E2E** pada 360/1280 px. Tidak ada Supabase/RLS nyata; TEST-001 terverifikasi hanya unit/katalog fixture, TEST-014 hanya warna token dan responsive E2E sederhana, bukan acceptance penuh. Format check PASS pada run 38205430420 saat checkpoint; CI final sesudah penghapusan bootstrap tetap perlu dijalankan sebelum gate M-001. TEST-002..013 dan audit IFP manual tetap NOT RUN.
+
+**Final CI fixture gate:** [run 38205529972](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205529972) PASS untuk npm ci/format/lint/type/unit (3)/kontras token (12)/build/Chromium E2E (4) setelah bootstrap lock dan format dihapus dari workflow. TEST-014 visual state dan viewport 768/1920 serta TEST-001 backend/RLS masih NOT RUN. Tidak boleh menganggap 3 unit + 4 E2E ini setara 14 test acceptance.
+
+### Hasil penutupan gate M-001 — 12 Oktober 2026
+
+[GitHub Actions run 38210031678](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38210031678) **PASS**: `npm ci`; `npm audit --omit=dev --audit-level=high` (0 vulnerabilities); `npm run format:check`; lint; typecheck; Vitest **3/3**; token contrast **12/12**; build; Playwright **20/20** (4 viewport × 5 test). Screenshot artifacts empat viewport berhasil diunduh dan ditinjau visual: 360, 768, 1280, 1920 px tanpa overflow/overlap yang terlihat. State tombol disabled/loading, opsi selected, input error, dialog fokus Tab/Escape/return-focus, media print dan reduced motion diuji. Tidak ada perubahan sandbox game atau pengujian IFP nyata karena keduanya belum diterapkan.
+
+**M-001 Verified hanya sesuai scope gate awal.** TEST-001 DB/draft/RLS/visibility published sesungguhnya **NOT RUN** (M-003). TEST-014 layar produk lainnya/IFP perangkat/cetak LKPD nyata **NOT RUN** (M-003–007). Semua acceptance yang membutuhkan Supabase, akun/sesi/penilaian tetap NOT RUN, bukan PASS.
