@@ -49,7 +49,12 @@ test(
       let answered = false;
       const timeout = setTimeout(() => {
         child.kill('SIGKILL');
-        reject(new Error('Bootstrap interactive prompt timed out. Sanitized child output: ' + transcript.replaceAll(password, '[REDACTED]').slice(-480)));
+        reject(
+          new Error(
+            'Bootstrap interactive prompt timed out. Sanitized child output: ' +
+              transcript.replaceAll(password, '[REDACTED]').slice(-480),
+          ),
+        );
       }, 16_000);
       child.stdout.on('data', (data) => {
         transcript += data.toString();
@@ -68,7 +73,14 @@ test(
       child.on('close', (code) => {
         clearTimeout(timeout);
         if (code !== 0 || !answered) {
-          reject(new Error('Bootstrap failed with status ' + String(code) + ', diagnostic: ' + transcript.replaceAll(password, '[REDACTED]').slice(-480)));
+          reject(
+            new Error(
+              'Bootstrap failed with status ' +
+                String(code) +
+                ', diagnostic: ' +
+                transcript.replaceAll(password, '[REDACTED]').slice(-480),
+            ),
+          );
         } else {
           resolve(transcript);
         }
