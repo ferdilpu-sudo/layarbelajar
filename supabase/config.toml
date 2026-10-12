@@ -19,6 +19,8 @@ additional_redirect_urls = []
 jwt_expiry = 3600
 enable_signup = false
 
+# Keep the email/password provider enabled for admin-created users.
+# [auth].enable_signup=false blocks self-registration globally.
 [auth.email]
-enable_signup = false
+enable_signup = true
 enable_confirmations = false
