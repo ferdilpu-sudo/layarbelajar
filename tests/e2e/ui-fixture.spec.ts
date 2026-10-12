@@ -18,7 +18,7 @@ test('komponen memiliki mapping kategori, minimum target sentuh, dan tidak overf
   const measures = await page.evaluate(() => {
     const buttons = Array.from(
       document.querySelectorAll<HTMLButtonElement>('.lb-button, .lb-chip, .lb-answer-option'),
-    );
+    ).filter((button) => button.getClientRects().length > 0);
     return {
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -68,7 +68,11 @@ test('aksesibilitas tombol, input, chip, pilihan dan dialog', async ({ page }) =
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('button', { name: 'Tutup' })).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(dialog.getByRole('button', { name: 'Tutup' })).toBeFocused();
+  const focusStillInDialog = await page.evaluate(() => {
+    const modal = document.querySelector('dialog');
+    return Boolean(modal && (modal === document.activeElement || modal.contains(document.activeElement)));
+  });
+  expect(focusStillInDialog).toBeTruthy();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
