@@ -5,10 +5,10 @@ import { Button } from '../../../shared/ui/Button';
 import { Card } from '../../../shared/ui/Card';
 import { Input } from '../../../shared/ui/Input';
 import { useIdentity } from '../application/IdentityProvider';
-import { functionCall, signIn } from '../infrastructure/accountApi';
+import { signIn } from '../infrastructure/accountApi';
 
 export function ChangePasswordPage() {
-  const { session, updateSession } = useIdentity();
+  const { session, updateSession, logout, authorizedCall } = useIdentity();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,11 +25,13 @@ export function ChangePasswordPage() {
       return;
     }
     setPending(true);
+    let passwordChanged = false;
     try {
-      await functionCall(session!.accessToken, 'change-password', {
+      await authorizedCall('change-password', {
         old_password: oldPassword,
         new_password: newPassword,
       });
+      passwordChanged = true;
       // GoTrue can invalidate the previous JWT after a password change.
       // Get a fresh session using the newly verified credentials.
       const newSession = await signIn(session!.identity.username, newPassword);
@@ -38,7 +40,12 @@ export function ChangePasswordPage() {
       setNewPassword('');
       setSuccess(true);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Perubahan password gagal.');
+      if (passwordChanged) {
+        // Do not keep stale privileges after Auth has rotated the password.
+        logout();
+      } else {
+        setError(cause instanceof Error ? cause.message : 'Perubahan password gagal.');
+      }
     } finally {
       setPending(false);
     }

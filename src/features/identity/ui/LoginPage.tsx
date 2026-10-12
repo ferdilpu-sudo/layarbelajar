@@ -57,7 +57,7 @@ export function LoginPage() {
           </Button>
         </form>
         <p className="lb-account-footnote">
-          Sesi disimpan hanya di memori tab. Muat ulang halaman untuk keluar otomatis.
+          Sesi aktif diperbarui secara aman di tab ini. Memuat ulang halaman akan meminta login kembali.
         </p>
         <Link to="/">← Kembali ke katalog</Link>
       </Card>

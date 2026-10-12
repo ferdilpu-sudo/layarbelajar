@@ -5,10 +5,10 @@ import { Button } from '../../../shared/ui/Button';
 import { Card } from '../../../shared/ui/Card';
 import { Input } from '../../../shared/ui/Input';
 import { useIdentity } from '../application/IdentityProvider';
-import { functionCall, type ManagedAccount, type Role } from '../infrastructure/accountApi';
+import { type ManagedAccount, type Role } from '../infrastructure/accountApi';
 
 export function AdminAccountsPage() {
-  const { session } = useIdentity();
+  const { session, authorizedCall } = useIdentity();
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [role, setRole] = useState<'teacher' | 'student'>('student');
@@ -24,7 +24,7 @@ export function AdminAccountsPage() {
   useEffect(() => {
     if (!accessToken || currentRole !== 'admin') return;
     let active = true;
-    void functionCall(accessToken, 'account-admin', { action: 'list' })
+    void authorizedCall('account-admin', { action: 'list' })
       .then((data) => {
         if (active && Array.isArray(data.items)) setAccounts(data.items as ManagedAccount[]);
       })
@@ -34,7 +34,7 @@ export function AdminAccountsPage() {
     return () => {
       active = false;
     };
-  }, [accessToken, currentRole]);
+  }, [accessToken, currentRole, authorizedCall]);
   if (!session) return <Navigate to="/login" replace />;
   if (session.identity.must_change_password) return <Navigate to="/ganti-password" replace />;
   if (session.identity.role !== 'admin') return <Navigate to="/akun" replace />;
@@ -45,14 +45,14 @@ export function AdminAccountsPage() {
     setTemporaryPassword('');
     setResult('');
     try {
-      const data = await functionCall(session!.accessToken, 'account-admin', body);
+      const data = await authorizedCall('account-admin', body);
       if (typeof data.temporary_password === 'string')
         setTemporaryPassword(data.temporary_password);
       setResult(
         'Operasi akun berhasil. Simpan password sementara sekarang jika ada; tidak akan ditampilkan ulang.',
       );
       setUserId(typeof data.id === 'string' ? data.id : '');
-      void functionCall(session!.accessToken, 'account-admin', { action: 'list' })
+      void authorizedCall('account-admin', { action: 'list' })
         .then((listing) => {
           if (Array.isArray(listing.items)) setAccounts(listing.items as ManagedAccount[]);
         })
