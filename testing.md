@@ -129,3 +129,8 @@ Bukti CI: [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/action
 - Test offline `npm run test:staging-preflight` memverifikasi pemblokiran URL non-HTTPS/non-Supabase/non-project-ref, key service_role/opaque, origin tak valid, profil anonim terpapar, serta CORS berbahaya; fixture fetch mencegah penggunaan network nyata dan memastikan operasi hanya GET/OPTIONS.
 - Saat project staging benar-benar dikonfigurasi, manual GitHub Actions `staging-preflight.yml` harus melakukan probe GoTrue health, anon SELECT yang tak bocor, OPTIONS origin sah dan origin asing untuk dua Edge Functions. PASS skrip hanyalah **READ-ONLY CONFIG CHECK**, bukan Auth hosted end-to-end, RLS per role, rate limits, restore/backup, admin CLI Windows, atau gate production.
 - **Saat penulisan ini: STAGING HOSTED NOT RUN/BLOCKED**. Bukti kelulusan contract CI akan dicatat sesudah job sukses; jangan mengarang hasil network/cloud.
+
+### Staging preflight offline gate (PR #6, source checkpoint)
+
+- `npm run test:staging-preflight` **PASS** dalam Foundation CI [run 38260925930](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38260925930), termasuk penolakan key service_role, URL non-hosted, origin non-HTTPS, kebocoran RLS anonim dan CORS origin asing. Ini **unit contract dengan mock fetch**, tidak pernah menyentuh staging asli.
+- Workflow preflight hosted **manual saja** dan tetap **NOT RUN**, karena tidak ada konfigurasi `staging` yang terverifikasi. M-002 **IN PROGRESS / NOT VERIFIED**. Temporary code formatter sudah dibersihkan dan workflow kembali ke `permissions: contents: read`.
