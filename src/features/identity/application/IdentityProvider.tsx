@@ -1,4 +1,12 @@
-import { createContext, useContext, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   functionCall,
   refreshIdentity,
