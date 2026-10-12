@@ -33,3 +33,10 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - **Offline contract:** 5/5 PASS pada [CI 38261146059](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261146059).
 - **Main CI setelah merge:** [38261732399](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261732399) PASS.
 - **Staging read-only execution:** NOT RUN; project hosted belum dikonfirmasi tersedia/terhubung pada agent. **End-to-end hosted:** NOT RUN. Konfigurasi selanjutnya harus dilakukan pemilik pada GitHub environment `staging` atau melalui integrasi Supabase yang terhubung, tidak dengan mengirim secret ke chat.
+
+## Live staging provisioning checkpoint — 12 Oktober 2026
+
+- Supabase project Free `layarbelajar-staging` ref `qfkjcjzwhewsbblgumco`, region `ap-southeast-1`, status ACTIVE_HEALTHY, biaya diketahui USD 0/month. Khusus staging, belum ada user siswa nyata.
+- `profiles_foundation` applied; hosted migration record `20261012154806` **tidak sama** dengan sumber Git `20261012060000`; jangan lakukan `db push` tanpa pemeriksaan/rekonsiliasi histori.
+- Database SQL checks: RLS enabled; anon SELECT denied; authenticated INSERT/UPDATE/DELETE denied, only one self-ready SELECT policy. Security advisor no lints, rows=0.
+- **Blocked:** hosted Auth signup disabled/email provider compatibility still unverified, app origin HTTPS belum ditetapkan, Edge Functions belum deployed, acceptance login/role/CORS/refresh hosted NOT RUN, bootstrap Windows NOT RUN. Staging project creation and DB schema PASS tidak menutup M-002.

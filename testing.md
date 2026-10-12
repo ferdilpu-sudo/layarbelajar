@@ -141,3 +141,7 @@ Bukti CI: [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/action
 - Main after PR#6 `70ce905a` [CI 38261732399](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261732399) PASS.
 - [PR#6 CI 38261146059](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261146059) PASS termasuk **5/5 offline staging preflight contract**, dan [backend 38261145983](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38261145983) PASS. Script hosted read-only menyediakan 4 pemeriksaan sungguhan **HANYA jika staging dikonfigurasi dan workflow manual dijalankan**.
 - **Hosted/staging Auth/RLS/CORS/refresh: NOT RUN**, Windows bootstrap pemilik: NOT RUN; backup/restore cloud: NOT RUN. Local 19 integrasi + 12 browser tetap PASS sebagai bukti M-002 parsial. TEST-002 hosted tidak dapat ditutup dan M-002 NOT VERIFIED.
+
+## Hosted staging schema preflight — 12 Oktober 2026
+
+Supabase project staging `qfkjcjzwhewsbblgumco` dalam Free plan sudah ACTIVE_HEALTHY. Migrasi `profiles_foundation` (`20261012154806` pada hosted) **APPLIED**. Database read-only verification: `public.profiles` ada (0 rows), RLS=true, `anon` SELECT=false, `authenticated` SELECT=true / INSERT=false / UPDATE=false / DELETE=false, policy_count=1; security advisor lints kosong. **Hanya schema/grants lulus**, bukan perilaku JWT hosted per role. Edge Functions: belum ada; runtime CORS/login hosted **NOT RUN**. History migrasi hosted memakai timestamp berbeda dari nama berkas sumber sehingga butuh rekonsiliasi sebelum pipeline migrasi otomatis.
