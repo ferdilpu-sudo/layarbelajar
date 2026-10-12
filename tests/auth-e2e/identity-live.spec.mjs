@@ -63,8 +63,8 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
 
   async function clientNavigate(page, path) {
     await page.evaluate((destination) => {
-      window.history.pushState({}, '', destination);
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      globalThis.history.pushState({}, '', destination);
+      globalThis.dispatchEvent(new globalThis.PopStateEvent('popstate'));
     }, path);
   }
 
