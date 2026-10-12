@@ -12,10 +12,22 @@ export default defineConfig({
     video: 'off',
   },
   projects: [
-    { name: 'local-auth-mobile-360', use: { ...devices['Desktop Chrome'], viewport: { width: 360, height: 800 } } },
-    { name: 'local-auth-tablet-768', use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } } },
-    { name: 'local-auth-desktop-1280', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
-    { name: 'local-auth-wide-1920', use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } } },
+    {
+      name: 'local-auth-mobile-360',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 360, height: 800 } },
+    },
+    {
+      name: 'local-auth-tablet-768',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
+    },
+    {
+      name: 'local-auth-desktop-1280',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
+    },
+    {
+      name: 'local-auth-wide-1920',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
+    },
   ],
   webServer: {
     command: 'npm run dev -- --host 127.0.0.1',

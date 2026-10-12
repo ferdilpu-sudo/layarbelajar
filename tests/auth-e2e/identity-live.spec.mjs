@@ -15,25 +15,41 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
   test.beforeAll(async () => {
     const auth = await localRequest(env.url, env.serviceKey, '/auth/v1/admin/users', {
       method: 'POST',
-      body: { email: adminUsername + '@accounts.invalid', password: originalPassword, email_confirm: true },
+      body: {
+        email: adminUsername + '@accounts.invalid',
+        password: originalPassword,
+        email_confirm: true,
+      },
     });
     assert.equal(auth.ok, true, 'Synthetic local admin creation must work');
     created.push(auth.data.id);
     const profile = await localRequest(env.url, env.serviceKey, '/rest/v1/profiles', {
       method: 'POST',
-      body: { id: auth.data.id, username: adminUsername, display_name: 'Admin Lokal', role: 'admin', active: true, must_change_password: false },
+      body: {
+        id: auth.data.id,
+        username: adminUsername,
+        display_name: 'Admin Lokal',
+        role: 'admin',
+        active: true,
+        must_change_password: false,
+      },
     });
     assert.equal(profile.ok, true);
   });
   test.afterAll(async () => {
     // Cleanup synthetic credentials without putting them in browser traces/logs.
-    const profiles = await localRequest(env.url, env.serviceKey,
-      '/rest/v1/profiles?select=id&username=eq.' + teacherUsername);
+    const profiles = await localRequest(
+      env.url,
+      env.serviceKey,
+      '/rest/v1/profiles?select=id&username=eq.' + teacherUsername,
+    );
     if (profiles.ok && Array.isArray(profiles.data)) {
       for (const profile of profiles.data) created.push(profile.id);
     }
     for (const id of new Set(created)) {
-      const deleted = await localRequest(env.url, env.serviceKey, '/auth/v1/admin/users/' + id, { method: 'DELETE' });
+      const deleted = await localRequest(env.url, env.serviceKey, '/auth/v1/admin/users/' + id, {
+        method: 'DELETE',
+      });
       assert.equal(deleted.ok, true, 'Synthetic user cleanup must work');
     }
   });
@@ -45,7 +61,9 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     await page.getByRole('button', { name: 'Masuk' }).click();
   }
 
-  test('admin provision → teacher pending → change password → reset/deactivate', async ({ page }) => {
+  test('admin provision → teacher pending → change password → reset/deactivate', async ({
+    page,
+  }) => {
     await login(page, adminUsername, originalPassword);
     await expect(page).toHaveURL(/\/akun$/);
     await expect(page.getByRole('heading', { name: 'Halo, ' + adminUsername })).toBeVisible();
