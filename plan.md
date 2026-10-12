@@ -78,3 +78,9 @@ TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state,
 - Run [38205430420](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205430420): format-check, lint, typecheck, unit, kontras, build telah PASS saat dicatat; E2E masih berjalan ketika checkpoint ini ditulis. Jangan mengubah hasil yang belum diketahui menjadi PASS.
 - TASK-002: source+lockfile sudah tersedia dan CI penting pernah PASS. TASK-003/004: UI fixture teruji terbatas. TASK-005: **IN PROGRESS** sampai CI akhir setelah pembersihan workflow dan seluruh gate M-001 tercatat. TASK-017: **TODO**, buat fixture seluruh state, screenshot baseline dan verifikasi 360/768/1280/1920; IFP aktual tetap M-007.
 - Semua TEST-001/014 penuh, Supabase/RLS dan integrasi kelas tetap **NOT RUN**. M-001 tetap belum Verified.
+
+### Final gate otomatis setelah normalisasi CI — 12 Oktober 2026
+
+- Commit kode terakhir untuk gate: `f542fc4cb6caeab1f715c6bfc86b4fd1ef0ba616`.
+- GitHub Actions [run 38205529972](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38205529972): **PASS** `npm ci`, `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit` (3), `npm run test:tokens` (12), `npm run build` dan `npm run test:e2e` (4 tes). CI sekarang read-only dan lockfile terkunci di git.
+- TASK-005 **PASS untuk otomatisasi fixture yang tersedia**, bukan acceptance penuh M-001. TASK-017 **TODO**: fixture seluruh state komponen, baseline visual yang direview, viewport 768/1920, audit kontrol/fokus/selected dan kontras terhadap thumbnail. M-001 tetap **In progress / NOT VERIFIED**. Tidak ada implementasi atau pengujian integrasi Supabase pada checkpoint ini.
