@@ -81,7 +81,7 @@ test.describe('local Auth + real browser — TEST-002 partial', () => {
     const teacherId = await page.getByRole('textbox', { name: 'ID akun' }).inputValue();
     assert.match(teacherId, /^[0-9a-f-]{36}$/i);
     await page.getByRole('button', { name: 'Sembunyikan' }).click();
-    await expect(page.getByText('Guru Sintetis')).toBeVisible();
+    await expect(page.locator('.lb-account-list').getByText('Guru Sintetis', { exact: true })).toBeVisible();
 
     await page.goto('/akun');
     await page.getByRole('button', { name: 'Keluar' }).click();
