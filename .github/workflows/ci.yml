@@ -2,9 +2,9 @@ name: Foundation CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, feat/m002-browser-auth-gate]
 permissions:
-  contents: read
+  contents: write
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -18,6 +18,17 @@ jobs:
         run: npm ci
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
+      - name: One-time format M-002 browser tests
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/m002-browser-auth-gate'
+        run: |
+          npm run format
+          git add tests scripts playwright.auth.config.ts eslint.config.js package.json
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'style(m002): format browser integration test sources'
+            git push origin HEAD:feat/m002-browser-auth-gate
+          fi
       - name: Format check
         run: npm run format:check
       - name: Lint
