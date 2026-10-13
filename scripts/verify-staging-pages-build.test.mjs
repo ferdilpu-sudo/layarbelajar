@@ -52,7 +52,12 @@ test('refuses insecure, wildcard, local and path-bearing app origins', () => {
 });
 
 test('refuses service-role tokens, opaque keys and corrupt JWTs', () => {
-  for (const value of [token('service_role'), 'sb_secret_fake', 'sb_publishable_fake', 'not-a-jwt']) {
+  for (const value of [
+    token('service_role'),
+    'sb_secret_fake',
+    'sb_publishable_fake',
+    'not-a-jwt',
+  ]) {
     assert.throws(
       () => verifyStagingPagesBuild({ ...env, VITE_SUPABASE_PUBLISHABLE_KEY: value }),
       /STAGING_PAGES_BUILD_BLOCKED/,
