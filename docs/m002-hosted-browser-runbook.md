@@ -1,6 +1,6 @@
 # M-002 — Hosted Cloudflare Pages browser Auth acceptance
 
-**Status: CODE ONLY / HOSTED NOT RUN.** This is a new gate after [read-only preflight 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) and [synthetic backend 38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025) succeeded. Neither of those proves hydrated browser Auth on the actual Pages site.
+**Status: HOSTED PASS 9/9 on 13 October 2026; independent cleanup verified.** This is a new gate after [read-only preflight 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) and [synthetic backend 38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025) succeeded. The separate live browser run below now proves the covered hydrated Pages login and role-navigation flows.
 
 ## Strict scope and approvals
 
@@ -22,6 +22,11 @@
 
 ## Evidence and limits
 
-- **Hosted Pages browser QA: NOT RUN** until owner dispatches merged workflow. Offline CI contracts assert fail-closed configuration and empty staging gates; they are not browser success.
+- **Hosted Pages browser QA: PASS** via [run 38425114268](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38425114268) on merged `main` at `42110c0c`. The script reported `HOSTED_BROWSER_AUTH_PASS: 9 bounded checks.` Previous offline contracts alone would not constitute this hosted proof.
 - Existing backend Auth 8/8 stays PASS, not rerun here. This test covers **hydrated UX and browser navigation**, not production rollout, cross-device persistence, every networking failure scenario, full accessibility, Windows owner-terminal bootstrap, hosted backup/restore rehearsal, quotas/rate-limits or Git/hosted migration history reconciliation.
-- **M-002 remains IN PROGRESS / NOT VERIFIED** pending independent browser run and remaining operating gates.
+- **M-002 remains IN PROGRESS / NOT VERIFIED** pending Windows owner bootstrap, backup/restore and operating limits, migration drift review and owner signoff.
+
+## Independent post-run cleanup evidence
+
+- Separate Supabase read-only SQL observed `auth.users=0`, `public.profiles=0`, no `lbqa_` Auth users/profiles; Security Advisor found **0 lints**.
+- No need to dispatch the browser test again until meaningful code or infrastructure changes warrant new proof. Treat screenshots, account names and token values as sensitive and do not publish them.
