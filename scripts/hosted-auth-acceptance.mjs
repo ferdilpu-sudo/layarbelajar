@@ -19,7 +19,8 @@ function roleOf(jwt) {
     if (
       payload.iss !== 'supabase' ||
       (typeof payload.exp === 'number' && payload.exp <= Date.now() / 1000)
-    ) return null;
+    )
+      return null;
     return payload.role;
   } catch {
     return null;
@@ -27,23 +28,42 @@ function roleOf(jwt) {
 }
 
 export function validateConfig(env) {
-  if (env.STAGING_ACCEPTANCE_CONFIRM !== CONFIRMATION) block('Explicit staging-only confirmation is required.');
-  if (env.STAGING_PROJECT_REF !== REF || env.STAGING_SUPABASE_URL !== URL || env.STAGING_APP_ORIGIN !== ORIGIN) {
+  if (env.STAGING_ACCEPTANCE_CONFIRM !== CONFIRMATION)
+    block('Explicit staging-only confirmation is required.');
+  if (
+    env.STAGING_PROJECT_REF !== REF ||
+    env.STAGING_SUPABASE_URL !== URL ||
+    env.STAGING_APP_ORIGIN !== ORIGIN
+  ) {
     block('The target must be the exact dedicated staging project and Pages origin.');
   }
-  if (roleOf(env.STAGING_ANON_KEY) !== 'anon') block('GitHub staging Environment secret STAGING_ANON_KEY must be a legacy anon JWT.');
+  if (roleOf(env.STAGING_ANON_KEY) !== 'anon')
+    block('GitHub staging Environment secret STAGING_ANON_KEY must be a legacy anon JWT.');
   if (roleOf(env.STAGING_SERVICE_ROLE_KEY) !== 'service_role') {
-    block('GitHub staging Environment secret STAGING_SERVICE_ROLE_KEY must be a legacy service_role JWT.');
+    block(
+      'GitHub staging Environment secret STAGING_SERVICE_ROLE_KEY must be a legacy service_role JWT.',
+    );
   }
-  if (env.STAGING_ANON_KEY === env.STAGING_SERVICE_ROLE_KEY) block('Public and service keys must differ.');
-  return { url: URL, origin: ORIGIN, anon: env.STAGING_ANON_KEY, service: env.STAGING_SERVICE_ROLE_KEY };
+  if (env.STAGING_ANON_KEY === env.STAGING_SERVICE_ROLE_KEY)
+    block('Public and service keys must differ.');
+  return {
+    url: URL,
+    origin: ORIGIN,
+    anon: env.STAGING_ANON_KEY,
+    service: env.STAGING_SERVICE_ROLE_KEY,
+  };
 }
 
 function requireResult(condition, step) {
   if (!condition) throw new Error('HOSTED_ACCEPTANCE_FAILED: ' + step);
 }
 
-async function request(cfg, fetcher, path, { service = false, method = 'GET', token, body, origin = false } = {}) {
+async function request(
+  cfg,
+  fetcher,
+  path,
+  { service = false, method = 'GET', token, body, origin = false } = {},
+) {
   const key = service ? cfg.service : cfg.anon;
   let response;
   try {
@@ -101,11 +121,16 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       method: 'POST',
       body: { email: identity.email, password },
     });
-    requireResult(result.ok && typeof result.data?.access_token === 'string', 'Synthetic sign-in failed.');
+    requireResult(
+      result.ok && typeof result.data?.access_token === 'string',
+      'Synthetic sign-in failed.',
+    );
     return result.data;
   };
   const ownRows = async (token, id) => {
-    const r = await api('/rest/v1/profiles?select=id,username,role,active,must_change_password', { token });
+    const r = await api('/rest/v1/profiles?select=id,username,role,active,must_change_password', {
+      token,
+    });
     requireResult(r.ok && Array.isArray(r.data), 'Authenticated profile query failed.');
     if (id) requireResult(r.data.length === 1 && r.data[0].id === id, 'Own-profile RLS mismatch.');
     return r.data;
@@ -128,7 +153,8 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       role,
     });
     requireResult(
-      r.status === 200 && uuid.test(r.data?.data?.id ?? '') &&
+      r.status === 200 &&
+        uuid.test(r.data?.data?.id ?? '') &&
         typeof r.data?.data?.temporary_password === 'string',
       'Admin provision ' + role + ' failed.',
     );
@@ -146,8 +172,14 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       policy.data?.external?.email === true,
     'Signup policy precheck failed.',
   );
-  requireResult((await listUsers()).length === 0, 'Staging Auth is not empty; no accounts were touched.');
-  requireResult((await profiles()).length === 0, 'Staging profiles not empty; no accounts were touched.');
+  requireResult(
+    (await listUsers()).length === 0,
+    'Staging Auth is not empty; no accounts were touched.',
+  );
+  requireResult(
+    (await profiles()).length === 0,
+    'Staging profiles not empty; no accounts were touched.',
+  );
   log('PASS hosted-acceptance preflight-empty-staging');
 
   try {
@@ -158,7 +190,10 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       method: 'POST',
       body: { email: names[0].email, password, email_confirm: true },
     });
-    requireResult(auth.ok && uuid.test(auth.data?.id ?? ''), 'Synthetic admin Auth creation failed.');
+    requireResult(
+      auth.ok && uuid.test(auth.data?.id ?? ''),
+      'Synthetic admin Auth creation failed.',
+    );
     const adminId = auth.data.id;
     createdIds.add(adminId);
     const profile = await api('/rest/v1/profiles', {
@@ -183,10 +218,24 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
     requireResult(createdIds.size === 3, 'Unexpected synthetic identity count.');
     const teacherInitial = await login(names[1], teacher.password);
     const studentInitial = await login(names[2], student.password);
-    requireResult((await ownRows(teacherInitial.access_token)).length === 0, 'Pending teacher gained profile access.');
-    requireResult((await ownRows(studentInitial.access_token)).length === 0, 'Pending student gained profile access.');
-    const pendingTeacher = await edge('change-password', teacherInitial.access_token, undefined, 'GET');
-    requireResult(pendingTeacher.status === 200 && pendingTeacher.data?.data?.must_change_password === true, 'Pending teacher status failed.');
+    requireResult(
+      (await ownRows(teacherInitial.access_token)).length === 0,
+      'Pending teacher gained profile access.',
+    );
+    requireResult(
+      (await ownRows(studentInitial.access_token)).length === 0,
+      'Pending student gained profile access.',
+    );
+    const pendingTeacher = await edge(
+      'change-password',
+      teacherInitial.access_token,
+      undefined,
+      'GET',
+    );
+    requireResult(
+      pendingTeacher.status === 200 && pendingTeacher.data?.data?.must_change_password === true,
+      'Pending teacher status failed.',
+    );
     const denied = await edge('account-admin', studentInitial.access_token, { action: 'list' });
     requireResult(denied.status === 403, 'Student gained admin privileges.');
     log('PASS hosted-acceptance provision-pending-deny-role');
@@ -204,10 +253,16 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
     requireResult(changed.status === 200, 'Teacher password change failed.');
     const teacherReady = await login(names[1], teacherNewPassword);
     await ownRows(teacherReady.access_token, teacher.id);
-    const foreign = await api('/rest/v1/profiles?select=id&id=eq.' + encodeURIComponent(student.id), {
-      token: teacherReady.access_token,
-    });
-    requireResult(foreign.ok && Array.isArray(foreign.data) && foreign.data.length === 0, 'Cross-role RLS leak.');
+    const foreign = await api(
+      '/rest/v1/profiles?select=id&id=eq.' + encodeURIComponent(student.id),
+      {
+        token: teacherReady.access_token,
+      },
+    );
+    requireResult(
+      foreign.ok && Array.isArray(foreign.data) && foreign.data.length === 0,
+      'Cross-role RLS leak.',
+    );
     log('PASS hosted-acceptance password-change-cross-role-rls');
 
     const studentNewPassword = generatedPassword();
@@ -232,7 +287,8 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       body: { refresh_token: teacherReady.refresh_token },
     });
     requireResult(
-      refreshed.ok && typeof refreshed.data?.access_token === 'string' &&
+      refreshed.ok &&
+        typeof refreshed.data?.access_token === 'string' &&
         typeof refreshed.data?.refresh_token === 'string' &&
         refreshed.data.refresh_token !== teacherReady.refresh_token,
       'Refresh token rotation failed.',
@@ -248,10 +304,16 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
       reset.status === 200 && typeof reset.data?.data?.temporary_password === 'string',
       'Admin password reset failed.',
     );
-    requireResult((await ownRows(refreshed.data.access_token)).length === 0, 'Reset did not block old JWT.');
+    requireResult(
+      (await ownRows(refreshed.data.access_token)).length === 0,
+      'Reset did not block old JWT.',
+    );
     const resetLogin = await login(names[1], reset.data.data.temporary_password);
     const resetPending = await edge('change-password', resetLogin.access_token, undefined, 'GET');
-    requireResult(resetPending.status === 200 && resetPending.data?.data?.must_change_password === true, 'Reset pending flag absent.');
+    requireResult(
+      resetPending.status === 200 && resetPending.data?.data?.must_change_password === true,
+      'Reset pending flag absent.',
+    );
     const stopped = await edge('account-admin', admin.access_token, {
       action: 'deactivate',
       user_id: teacher.id,
@@ -259,7 +321,10 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
     requireResult(stopped.status === 200, 'Admin deactivate failed.');
     const deniedInactive = await edge('change-password', resetLogin.access_token, undefined, 'GET');
     requireResult(deniedInactive.status === 403, 'Deactivated teacher still has Edge access.');
-    requireResult((await ownRows(resetLogin.access_token)).length === 0, 'Deactivated teacher still sees profile.');
+    requireResult(
+      (await ownRows(resetLogin.access_token)).length === 0,
+      'Deactivated teacher still sees profile.',
+    );
     log('PASS hosted-acceptance reset-deactivate-old-token-denial');
     completed = true;
   } catch (error) {
@@ -276,14 +341,25 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
           }
         }
         for (const id of createdIds) {
-          const deleted = await api('/auth/v1/admin/users/' + id, { service: true, method: 'DELETE' });
+          const deleted = await api('/auth/v1/admin/users/' + id, {
+            service: true,
+            method: 'DELETE',
+          });
           requireResult(deleted.ok, 'Synthetic cleanup DELETE failed.');
         }
-        requireResult((await listUsers()).length === 0, 'Auth user remains after cleanup; reconcile manually.');
-        requireResult((await profiles()).length === 0, 'Profile remains after cleanup; reconcile manually.');
+        requireResult(
+          (await listUsers()).length === 0,
+          'Auth user remains after cleanup; reconcile manually.',
+        );
+        requireResult(
+          (await profiles()).length === 0,
+          'Profile remains after cleanup; reconcile manually.',
+        );
         log('PASS hosted-acceptance cleanup-no-remaining-users');
       } catch {
-        firstError = new Error('HOSTED_ACCEPTANCE_FAILED: Cleanup incomplete; inspect staging synthetic lbqa_ accounts before retrying.');
+        firstError = new Error(
+          'HOSTED_ACCEPTANCE_FAILED: Cleanup incomplete; inspect staging synthetic lbqa_ accounts before retrying.',
+        );
       }
     }
   }
