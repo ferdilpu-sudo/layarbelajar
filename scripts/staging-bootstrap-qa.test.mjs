@@ -3,15 +3,19 @@ import { test } from 'node:test';
 import { runStagingBootstrapQa, OWNER_CONFIRMATION } from './staging-bootstrap-qa.mjs';
 
 const uid = '123e4567-e89b-42d3-a456-426614174000';
-const jwt = (role) => [
-  Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
-  Buffer.from(JSON.stringify({ iss: 'supabase', role })).toString('base64url'),
-  'synthetic-signature',
-].join('.');
+const jwt = (role) =>
+  [
+    Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
+    Buffer.from(JSON.stringify({ iss: 'supabase', role })).toString('base64url'),
+    'synthetic-signature',
+  ].join('.');
 const secrets = { anonKey: jwt('anon'), serviceKey: jwt('service_role') };
 
 function fakeBackend({ existing = false, profileFailure = false } = {}) {
-  const state = { users: existing ? [{ id: uid, email: 'someone@accounts.invalid' }] : [], profile: null };
+  const state = {
+    users: existing ? [{ id: uid, email: 'someone@accounts.invalid' }] : [],
+    profile: null,
+  };
   const calls = [];
   const fetcher = async (url, options) => {
     const { pathname } = new URL(url);
@@ -56,13 +60,17 @@ test('preexisting users fail closed before asking for a password or writing', as
   const ctx = fakeBackend({ existing: true });
   let prompted = false;
   await assert.rejects(
-    () => runStagingBootstrapQa({
-      ...secrets,
-      fetcher: ctx.fetcher,
-      getPassword: () => { prompted = true; return 'longpasswordAa2!'; },
-      getConfirmation: () => OWNER_CONFIRMATION,
-      log: () => {},
-    }),
+    () =>
+      runStagingBootstrapQa({
+        ...secrets,
+        fetcher: ctx.fetcher,
+        getPassword: () => {
+          prompted = true;
+          return 'longpasswordAa2!';
+        },
+        getConfirmation: () => OWNER_CONFIRMATION,
+        log: () => {},
+      }),
     /Nonempty Auth users/,
   );
   assert.equal(prompted, false);
@@ -72,13 +80,14 @@ test('preexisting users fail closed before asking for a password or writing', as
 test('wrong confirmation blocks all mutation', async () => {
   const ctx = fakeBackend();
   await assert.rejects(
-    () => runStagingBootstrapQa({
-      ...secrets,
-      fetcher: ctx.fetcher,
-      getPassword: () => 'longpasswordAa2!',
-      getConfirmation: () => 'wrong',
-      log: () => {},
-    }),
+    () =>
+      runStagingBootstrapQa({
+        ...secrets,
+        fetcher: ctx.fetcher,
+        getPassword: () => 'longpasswordAa2!',
+        getConfirmation: () => 'wrong',
+        log: () => {},
+      }),
     /Owner confirmation missing/,
   );
   assert.ok(ctx.calls.every((value) => value.startsWith('GET ')));
@@ -87,11 +96,14 @@ test('wrong confirmation blocks all mutation', async () => {
 test('rejects wrong service-role JWT before network access', async () => {
   let connected = false;
   await assert.rejects(
-    () => runStagingBootstrapQa({
-      ...secrets,
-      serviceKey: jwt('anon'),
-      fetcher: () => { connected = true; },
-    }),
+    () =>
+      runStagingBootstrapQa({
+        ...secrets,
+        serviceKey: jwt('anon'),
+        fetcher: () => {
+          connected = true;
+        },
+      }),
     /service_role/,
   );
   assert.equal(connected, false);
@@ -100,13 +112,14 @@ test('rejects wrong service-role JWT before network access', async () => {
 test('failed profile creation cleans only test identity', async () => {
   const ctx = fakeBackend({ profileFailure: true });
   await assert.rejects(
-    () => runStagingBootstrapQa({
-      ...secrets,
-      fetcher: ctx.fetcher,
-      getPassword: () => 'longpasswordAa2!',
-      getConfirmation: () => OWNER_CONFIRMATION,
-      log: () => {},
-    }),
+    () =>
+      runStagingBootstrapQa({
+        ...secrets,
+        fetcher: ctx.fetcher,
+        getPassword: () => 'longpasswordAa2!',
+        getConfirmation: () => OWNER_CONFIRMATION,
+        log: () => {},
+      }),
     /WINDOWS_BOOTSTRAP_FAILED/,
   );
   assert.equal(ctx.state.users.length, 0);
