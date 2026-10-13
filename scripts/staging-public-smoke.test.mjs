@@ -22,7 +22,7 @@ test('public smoke reads only a pinned staging URL using GET and OPTIONS', async
 test('fails if hosted functions allow no-token callers', async () => {
   const mockFetch = async (url) =>
     new Response('{}', { status: url.endsWith('/health') ? 200 : 200 });
-  await assert.rejects(() => runPublicSmoke(mockFetch), /anonymous authorization denial/);
+  await assert.rejects(() => runPublicSmoke(mockFetch), /unauthenticated GET returned HTTP/);
 });
 
 test('fails when foreign-origin wildcard CORS is returned', async () => {
