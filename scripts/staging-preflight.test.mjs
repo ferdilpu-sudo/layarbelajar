@@ -123,7 +123,9 @@ test('rejects a leaked anonymous profile or permissive foreign CORS', async () =
 });
 
 // A fully read-only settings request must block before any account operation.
-test('blocks self-signup enabled, disabled email sign-in, malformed settings and unhealthy GoTrue', async () => {
+test(
+  'blocks self-signup enabled, disabled email sign-in, malformed settings and unhealthy GoTrue',
+  async () => {
   const config = validateHostedConfig(settings);
   for (const [body, expected] of [
     [{ disable_signup: false, external: { email: true } }, /disable public signup/],
