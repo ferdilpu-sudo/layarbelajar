@@ -7,16 +7,11 @@
 1. Buat/otorisasi sebuah project **khusus staging** milik pemilik, terpisah dari database produksi dan data siswa asli. Jangan membuat project berbayar atau mengaktifkan billing otomatis. Gunakan hanya akun uji sintetis saat tahap mutatif berikutnya.
 2. **Deploy Edge Functions telah selesai pada 13 Oktober 2026; jangan deploy ulang tanpa perubahan source.** Masih harus konfigurasi `APP_ALLOWED_ORIGINS` pada secret Edge ke **origin HTTPS frontend staging persis**, setelah site staging benar-benar tersedia.
 3. Supabase Hosted Auth: disable pendaftaran publik di pengaturan global, namun biarkan email/password sign-in tersedia untuk akun provisioning. Pastikan alias `@accounts.invalid` kompatibel sebelum memasukkan user nyata.
-4. Di GitHub repository, siapkan **Environment** bernama `staging`, set protection/reviewer yang sesuai dan nilai berikut di Environment (jangan menaruhnya dalam git atau chat):
+4. Di GitHub repository **ferdilpu-sudo/layarbelajar** → **Settings → Environments → staging → Environment secrets**, tambahkan satu secret bernama **`STAGING_ANON_KEY`**: legacy JWT public **anon** dari project Supabase staging. Jangan gunakan `service_role` atau `sb_publishable_...`, jangan taruh nilainya pada Variables atau kirim lewat chat. Environment harus bernama **`staging`** (huruf kecil); proteksi/reviewer tetap sesuai kebijakan pemilik.
 
-| Nama | Jenis | Contoh/batas |
-|---|---|---|
-| `STAGING_PROJECT_REF` | Variable | `qfkjcjzwhewsbblgumco` (exact-only) |
-| `STAGING_SUPABASE_URL` | Variable | `https://qfkjcjzwhewsbblgumco.supabase.co` |
-| `STAGING_APP_ORIGIN` | Variable | `https://layarbelajar.pages.dev` (exact-only) |
-| `STAGING_ANON_KEY` | Secret | JWT legacy dengan role `anon` (BUKAN service_role) |
+Tiga konfigurasi **non-rahasia** sudah dipatok langsung dalam workflow dan diperiksa ulang oleh script: `STAGING_PROJECT_REF=qfkjcjzwhewsbblgumco`, `STAGING_SUPABASE_URL=https://qfkjcjzwhewsbblgumco.supabase.co`, dan `STAGING_APP_ORIGIN=https://layarbelajar.pages.dev`. Tidak perlu membuat Environment variables untuk ketiganya. `APP_ALLOWED_ORIGINS` di Supabase Edge adalah **konfigurasi terpisah** dan tidak mengisi GitHub Environment secret.
 
-**Tidak** menambahkan `SUPABASE_SERVICE_ROLE_KEY` sebagai secret workflow preflight. Workflow `.github/workflows/staging-preflight.yml` hanya menggunakan nilai di atas, tanpa identitas guru/siswa, password, atau token admin.
+**Tidak** menambahkan `SUPABASE_SERVICE_ROLE_KEY` sebagai secret workflow preflight. Workflow `.github/workflows/staging-preflight.yml` tidak menggunakan akun siswa/guru, password, atau token admin.
 
 ## Jalankan dan nilai hasil
 
@@ -52,3 +47,9 @@ Cloudflare Pages owner-only setup is described in [docs/m002-cloudflare-pages-st
 - Direct staging SQL read-only inspection: `auth.users=0`, `profiles=0`, RLS enabled, anon SELECT not granted, authenticated SELECT granted, authenticated writes denied; security advisors report **0 lints**. This is database metadata, **not** proof of hosted HTTP access with anon JWT.
 - Enhanced `scripts/staging-preflight.mjs` requires the confirmed staging ref/origin, legacy public **anon** JWT from the GitHub `staging` Environment, GET GoTrue `/health` and `/settings` (must be `disable_signup=true`, `external.email=true`), GET anonymous `profiles` and OPTIONS CORS for both functions. **All requests remain GET/OPTIONS without user creation or passwords.**
 - This enhanced workflow is **NOT RUN on hosted** until GitHub Environment configuration is present and the owner manually dispatches it from merged `main`. Never paste an API key into Git, issue comments or chat. Any policy mismatch blocks subsequent synthetic account tests. M-002 remains IN PROGRESS.
+
+## Missing configuration incident — 13 Oktober 2026
+
+- Runs [38370408344](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38370408344) dan [38409543139](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38409543139) **FAIL sebelum koneksi hosted**: seluruh tiga vars dan secret GitHub terdeteksi kosong pada runner, `STAGING_PREFLIGHT_BLOCKED: Required staging configuration is missing`.
+- Perbaikan berikutnya mematok tiga nilai publik pada job GitHub Actions dan mempertahankan **satu secret** `STAGING_ANON_KEY` dari environment `staging`. Jika belum tersedia, error spesifik muncul tanpa mencetak nilai secret.
+- **Gate hosted Auth policy/RLS tetap NOT RUN**, bukan FAIL dari Supabase; validasi ulang melalui workflow pada `main` setelah perubahan merged dan secret pemilik tersedia. Tidak ada mutasi akun/data.

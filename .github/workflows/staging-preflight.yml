@@ -16,8 +16,8 @@ jobs:
           node-version: '24'
       - name: Validate staging Auth, RLS and CORS (GET/OPTIONS only)
         env:
-          STAGING_PROJECT_REF: ${{ vars.STAGING_PROJECT_REF }}
-          STAGING_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
-          STAGING_APP_ORIGIN: ${{ vars.STAGING_APP_ORIGIN }}
+          STAGING_PROJECT_REF: qfkjcjzwhewsbblgumco
+          STAGING_SUPABASE_URL: https://qfkjcjzwhewsbblgumco.supabase.co
+          STAGING_APP_ORIGIN: https://layarbelajar.pages.dev
           STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
         run: node scripts/staging-preflight.mjs
