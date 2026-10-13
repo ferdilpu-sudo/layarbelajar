@@ -1,0 +1,31 @@
+name: Temporary M-002 Browser Formatter
+on:
+  pull_request:
+    paths:
+      - 'scripts/hosted-browser-auth.mjs'
+      - 'scripts/hosted-browser-auth.test.mjs'
+      - '.github/workflows/m002-browser-format-preview.yml'
+permissions:
+  contents: read
+jobs:
+  show-formatter:
+    if: github.head_ref == 'feat/m002-hosted-browser-auth-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Format public source in runner only
+        run: |
+          npx prettier --write scripts/hosted-browser-auth.mjs scripts/hosted-browser-auth.test.mjs
+          echo M002_BROWSER_FORMAT_BEGIN
+          base64 -w0 scripts/hosted-browser-auth.mjs
+          echo
+          echo M002_BROWSER_FORMAT_END
+          echo M002_BROWSER_TEST_FORMAT_BEGIN
+          base64 -w0 scripts/hosted-browser-auth.test.mjs
+          echo
+          echo M002_BROWSER_TEST_FORMAT_END
