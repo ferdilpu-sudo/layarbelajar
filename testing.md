@@ -145,3 +145,9 @@ Bukti CI: [run 38253731459](https://github.com/ferdilpu-sudo/layarbelajar/action
 ## Hosted staging schema preflight — 12 Oktober 2026
 
 Supabase project staging `qfkjcjzwhewsbblgumco` dalam Free plan sudah ACTIVE_HEALTHY. Migrasi `profiles_foundation` (`20261012154806` pada hosted) **APPLIED**. Database read-only verification: `public.profiles` ada (0 rows), RLS=true, `anon` SELECT=false, `authenticated` SELECT=true / INSERT=false / UPDATE=false / DELETE=false, policy_count=1; security advisor lints kosong. **Hanya schema/grants lulus**, bukan perilaku JWT hosted per role. Edge Functions: belum ada; runtime CORS/login hosted **NOT RUN**. History migrasi hosted memakai timestamp berbeda dari nama berkas sumber sehingga butuh rekonsiliasi sebelum pipeline migrasi otomatis.
+
+## TEST-002 — Live hosted deployment checkpoint (13 Oktober 2026)
+
+**PASS (deployment metadata only):** Supabase `list_edge_functions` menunjukkan kedua function ACTIVE/version 1/`verify_jwt=true`; `get_edge_function` mencocokkan kode entrypoint dan shared dari Git commit `9330e679` identik. Database `profiles` RLS active, SELECT hanya authenticated, private helper tidak callable anon, Security Advisor **0 lints**.
+
+**NOT RUN:** GET/POST/OPTIONS terhadap actual hosted endpoints, Auth email/password provider dan public signup policy, CORS allow/deny untuk origin HTTPS frontend staging, account lifecycle, refresh token revoke/expiry browser, negative cross-role RLS, Windows owner bootstrap, backup/restore. 0 Auth users dan 0 profiles selama pembacaan. Project migrated version drift `20261012154806` vs Git `20261012060000`. **TEST-002 NOT FULLY PASS / M-002 NOT VERIFIED.**
