@@ -1,6 +1,6 @@
 # M-002 — Hosted synthetic Auth acceptance (owner-controlled)
 
-**Status: CODE REVIEW / NOT RUN on hosted.** The earlier [read-only preflight](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) passed five checks. This is a separate, explicitly mutating validation step and must never be triggered by pull requests.
+**Status: HOSTED 8/8 PASS, cleanup independently verified; browser and operations gates pending.** The earlier [read-only preflight](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) passed five checks. This is a separate, explicitly mutating validation step and must never be triggered by pull requests.
 
 ## Target and approval
 
@@ -20,7 +20,16 @@
 
 ## Evidence ledger
 
-- Synthetic workflow: **NOT RUN** until owner configures the privileged environment secret and manually authorizes workflow dispatch.
+- Synthetic workflow: **RUN and PASS** via [38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025); the original setup instructions are retained for future authorized runs.
 - Local integration: 19/19 PASS; local browser Auth: 12/12 PASS (separate CI evidence in `plan.md`).
 - Hosted Auth/CORS/RLS public and anon preflight: 5/5 PASS, [run 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433).
 - **M-002 remains IN PROGRESS / NOT VERIFIED** until each hosted write, role, session, cleanup and remaining operational gate has independent passing evidence.
+
+
+## Successful real staging execution — 13 October 2026
+
+- [Manual hosted synthetic workflow run 38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025) **SUCCESS** on merged main `6940e5e1`. Job reported eight independently named PASS groups and `HOSTED_SYNTHETIC_ACCEPTANCE_PASS: 8 bounded checks.`
+- The cleanup gate `PASS hosted-acceptance cleanup-no-remaining-users` succeeded. A **separate** Supabase SQL query after the workflow returned zero Auth users, zero profiles, zero `lbqa_` Auth identities and zero `lbqa_` profiles. Security Advisor: 0 security lints.
+- This validates staging GoTrue/Edge/PostgREST API and RLS with disposable identities; no hosted Cloudflare browser UI automation, Windows owner interactive bootstrap, restore/backup or operational limits were included.
+- The original script/workflow remains manual-only and privileged to the staging Environment. Do not put `STAGING_SERVICE_ROLE_KEY` into frontend build settings, public repository variables or chat.
+- **M-002 remains IN PROGRESS.** Move to browser Auth, Windows bootstrap, and operational gates; retain this run as proof rather than creating fresh users without need.
