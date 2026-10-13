@@ -192,3 +192,9 @@ TASK-017 (bagian M-001, bergantung TASK-004): buat fixture komponen semua state,
 - Published Pages HTTP smoke: GitHub Actions [38354227693](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38354227693) PASS: 3/3 offline tests, actual HTTP GET 200 React HTML shell for `/`, `/login`, `/gabung`, `/admin/akun`, plus bundled JavaScript asset PASS. These are read-only checks, NOT verified JS hydration, signed-in browser behavior or protected actions.
 - Cloudflare warned that `/* /index.html 200` was an ignored infinite-loop rewrite. Remove `public/_redirects`: Cloudflare Pages native SPA fallback supports React Router if there is no root `404.html` (https://developers.cloudflare.com/pages/configuration/serving-pages/). Verify warning gone when fixed Git commit deploys.
 - Exact Supabase staging secret value to configure after deploy: `APP_ALLOWED_ORIGINS=https://layarbelajar.pages.dev` — NOT CONFIGURED/NOT VERIFIED here. Hosted positive CORS, public-signup disable, synthetic user login/reset, RLS role matrix, refresh token, Windows bootstrap and restore remain NOT RUN. M-002 IN PROGRESS / NOT VERIFIED.
+
+## M-002 — Approved-origin CORS read-only gate (13 October 2026)
+
+- Pemilik menyatakan `APP_ALLOWED_ORIGINS=https://layarbelajar.pages.dev` telah disimpan pada Supabase staging. Klaim ini belum dianggap runtime PASS tanpa request nyata.
+- `scripts/staging-public-smoke.mjs` diperluas dari negative-only menjadi **7 GET/OPTIONS probes**: Auth gateway no-key, dua Edge no-token denial, dua exact approved-origin CORS OPTIONS (termasuk `authorization` header), dua foreign-origin explicit denial. Hanya project Supabase `qfkjcjzwhewsbblgumco`, tanpa key/password/body/POST.
+- Jalankan CI live `M-002 Hosted Public Smoke (No Credentials)` dan catat hasil pada PR. PASS tidak membuktikan login, refresh-token rotation, real browser, Auth signup disabled atau RLS cross-role. **M-002 In Progress**.

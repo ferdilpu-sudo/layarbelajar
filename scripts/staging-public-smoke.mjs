@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 export const STAGING_URL = 'https://qfkjcjzwhewsbblgumco.supabase.co';
 const EDGE_FUNCTIONS = ['account-admin', 'change-password'];
 const FOREIGN_ORIGIN = 'https://untrusted.invalid';
+export const APPROVED_ORIGIN = 'https://layarbelajar.pages.dev';
 
 async function request(fetcher, path, method, headers = {}) {
   const response = await fetcher(STAGING_URL + path, {
@@ -35,14 +36,39 @@ export async function runPublicSmoke(fetcher = fetch) {
     }
     checks.push(name + '-anonymous-denied');
 
-    const preflight = await request(fetcher, path, 'OPTIONS', {
-      Origin: FOREIGN_ORIGIN,
+    const preflightHeaders = {
       'Access-Control-Request-Method': 'POST',
       'Access-Control-Request-Headers': 'authorization,apikey,content-type',
+    };
+    const approved = await request(fetcher, path, 'OPTIONS', {
+      ...preflightHeaders,
+      Origin: APPROVED_ORIGIN,
     });
-    const allow = preflight.headers.get('access-control-allow-origin');
+    if (![200, 204].includes(approved.status)) {
+      throw new Error(name + ': approved-origin OPTIONS HTTP ' + approved.status);
+    }
+    if (approved.headers.get('access-control-allow-origin') !== APPROVED_ORIGIN) {
+      throw new Error(name + ': approved origin not reflected exactly.');
+    }
+    if (
+      !String(approved.headers.get('access-control-allow-headers') ?? '')
+        .toLowerCase()
+        .includes('authorization')
+    ) {
+      throw new Error(name + ': authorization header missing from CORS allowlist.');
+    }
+    checks.push(name + '-approved-origin-allowed');
+
+    const deniedOrigin = await request(fetcher, path, 'OPTIONS', {
+      ...preflightHeaders,
+      Origin: FOREIGN_ORIGIN,
+    });
+    const allow = deniedOrigin.headers.get('access-control-allow-origin');
     if (allow === '*' || allow === FOREIGN_ORIGIN) {
       throw new Error(name + ': foreign browser origin unexpectedly allowed.');
+    }
+    if (![401, 403].includes(deniedOrigin.status)) {
+      throw new Error(name + ': foreign-origin OPTIONS HTTP ' + deniedOrigin.status);
     }
     checks.push(name + '-foreign-origin-denied');
   }
@@ -55,7 +81,7 @@ export async function main() {
     for (const check of checks) console.log('PASS hosted-public ' + check);
     console.log('HOSTED_PUBLIC_SMOKE_PASS: ' + checks.length + ' non-mutating requests.');
     console.log(
-      'NOT VERIFIED: authorized staging origin, account lifecycle, JWT rotation or RLS user matrix.',
+      'NOT VERIFIED: browser credentialed CORS, account lifecycle, JWT rotation or RLS user matrix.',
     );
   } catch (error) {
     // Only status/endpoint diagnostics authored here; never log request data or HTTP bodies.
