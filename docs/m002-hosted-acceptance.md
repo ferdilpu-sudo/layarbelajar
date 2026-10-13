@@ -1,6 +1,6 @@
 # M-002 — Hosted Supabase acceptance checklist (owner-controlled)
 
-**Status: hosted public CORS and key-scoped read-only Auth/RLS preflight PASS / mutating hosted Auth acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
+**Status: hosted CORS, read-only Auth/RLS preflight, and synthetic backend Auth lifecycle PASS / browser and operations acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
 
 ## Environment & rollout
 - Use a dedicated staging Supabase project; record region, allowed services and provider quotas **without writing secrets into Git**.
@@ -104,3 +104,12 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 3. Verify admin create/list/reset/deactivate, teacher/student mandatory password change, wrong credentials, forbidden cross-role access, RLS denial, expired/rotated access and refresh sessions, and deactivation of pre-existing JWTs. Mark each independently PASS/FAIL/NOT RUN.
 4. Verify idempotent cleanup of test users and profiles; if cleanup fails, **halt and reconcile** rather than deleting unknown users. Record project ref, Git SHA, CI run URL, account counts only, and owner approval.
 5. Keep Windows interactive bootstrap, restoration drill and operational/quotas review as separate gates; passing synthetic auth does not by itself complete M-002.
+
+
+## Hosted synthetic Auth + account lifecycle acceptance — 13 October 2026 (PASS)
+
+- Owner-authorized manual [GitHub Actions run 38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025), `main` commit `6940e5e18a3a852fcbc60e38e74a5875ba53242b`: **SUCCESS**, `HOSTED_SYNTHETIC_ACCEPTANCE_PASS: 8 bounded checks`. Backend hosted GoTrue, Edge and PostgREST used actual staging endpoints, **not mocked local Supabase**.
+- PASS: empty staging/disabled public signup; admin synthetic creation and login; teacher/student provision with pending status and deny-by-default role behavior; password change and cross-user read isolation; authenticated role PATCH rejected; genuine refresh-token rotation; reset/deactivation prevent access with existing JWTs; synthetic cleanup confirmed.
+- Separate trusted SQL after execution: `auth.users=0`, `profiles=0`, `lbqa_` prefix 0 in both. Security Advisor returned **0 lints**. No data belonging to real users was introduced. No credential values or JWTs recorded in evidence.
+- **Scope qualification:** this demonstrates API/backend synthetic lifecycle, **not hydrated Cloudflare Pages login**, browser route/UX at 360/768/1280/1920, foreground resume/reload, Windows interactive owner bootstrap, hosted rate limit resilience, hosted backup/restore rehearsal or migration-history reconciliation.
+- **Milestone M-002: IN PROGRESS / NOT VERIFIED.** Next isolated checks: user-visible browser Auth flow on deployed HTTPS frontend with safe ephemeral identities and cleanup; Windows bootstrap/recovery and operations gates. Do not rerun the successful hosted backend acceptance without a concrete reason.
