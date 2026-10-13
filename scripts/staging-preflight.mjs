@@ -16,8 +16,11 @@ export function validateHostedConfig(env) {
   const ref = env.STAGING_PROJECT_REF;
   const originString = env.STAGING_APP_ORIGIN;
   const key = env.STAGING_ANON_KEY;
-  if (![urlString, ref, originString, key].every((v) => typeof v === 'string' && v.length)) {
-    fail('Required staging configuration is missing.');
+  if (![urlString, ref, originString].every((v) => typeof v === 'string' && v.length)) {
+    fail('Required fixed staging configuration is missing.');
+  }
+  if (typeof key !== 'string' || !key.trim()) {
+    fail('GitHub staging Environment secret STAGING_ANON_KEY is missing.');
   }
   if (!/^[a-z0-9]{8,40}$/.test(ref) || ref !== EXPECTED_STAGING_REF) {
     fail('Project ref does not match the dedicated LayarBelajar staging project.');
