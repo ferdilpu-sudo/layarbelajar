@@ -1,0 +1,34 @@
+name: M-002 Hosted Synthetic Auth Acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_SYNTHETIC_STAGING_ONLY to permit 3 temporary users and cleanup'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: m002-staging-synthetic-acceptance
+  cancel-in-progress: false
+jobs:
+  hosted-synthetic:
+    name: Three synthetic accounts, lifecycle checks, cleanup
+    if: ${{ inputs.confirmation == 'RUN_SYNTHETIC_STAGING_ONLY' }}
+    environment: staging
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Auth and RLS synthetic acceptance (staging only)
+        env:
+          STAGING_ACCEPTANCE_CONFIRM: ${{ inputs.confirmation }}
+          STAGING_PROJECT_REF: qfkjcjzwhewsbblgumco
+          STAGING_SUPABASE_URL: https://qfkjcjzwhewsbblgumco.supabase.co
+          STAGING_APP_ORIGIN: https://layarbelajar.pages.dev
+          STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+          STAGING_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: node scripts/hosted-auth-acceptance.mjs
