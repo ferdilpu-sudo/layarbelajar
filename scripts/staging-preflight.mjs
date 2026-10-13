@@ -107,7 +107,9 @@ export async function checkHostedStaging(config, fetcher = fetch) {
     method: 'GET',
     headers,
   });
-  if (settings.status !== 200) fail('Auth settings check failed with HTTP ' + settings.status + '.');
+  if (settings.status !== 200) {
+    fail('Auth settings check failed with HTTP ' + settings.status + '.');
+  }
   let policy;
   try {
     policy = await settings.json();
