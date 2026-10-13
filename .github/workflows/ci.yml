@@ -32,6 +32,8 @@ jobs:
         run: npm run test:hosted-auth-contract
       - name: Hosted browser Auth gate contract (offline; no credentials)
         run: npm run test:hosted-browser-contract
+      - name: Windows staging bootstrap QA contract (offline only)
+        run: npm run test:windows-bootstrap-contract
       - name: Cloudflare Pages staging environment guard (offline)
         run: npm run test:pages:staging
       - name: Design token contrast
