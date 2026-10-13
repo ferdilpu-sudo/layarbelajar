@@ -48,3 +48,9 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - Security Advisor 0 lints. Private helper denies EXECUTE to `anon`; grants and one `profiles_select_self_ready_v1` RLS policy match initial contract at the inspected granularity.
 - Supabase hosted **Auth signup policy, credential alias compatibility, `APP_ALLOWED_ORIGINS` / approved HTTPS site origin, GET/OPTIONS + negative Origin, pending/reset/deactivate + refresh, operational backup/restore and owner Windows bootstrap are NOT RUN or NOT VERIFIED**. Explicitly do not call this TEST-002 PASS.
 - Migration history mismatch (`20261012154806` hosted vs `20261012060000` in Git) remains blocked from automatic `db push`.
+
+## M-002 — Actual hosted public HTTP negative smoke, 13 Oktober 2026
+
+- Script `scripts/staging-public-smoke.mjs` dan workflow `.github/workflows/staging-public-smoke.yml` melakukan request **GET / OPTIONS saja**, tanpa key, bearer, password, cookies, body, pembuatan akun maupun data siswa. Target dibatasi eksplisit ke staging `qfkjcjzwhewsbblgumco`, tidak ada network mutable/proyek produksi.
+- GitHub Actions [run 38334648904](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38334648904) **PASS 3/3 offline unit + 5/5 actual hosted read-only requests**: Auth health tanpa key mengembalikan **HTTP 401** (gateway memerlukan API key, **bukan bukti GoTrue health 200**); `account-admin` dan `change-password` menolak anonim; `Origin: https://untrusted.invalid` tidak menerima CORS `Access-Control-Allow-Origin` yang cocok/wildcard.
+- Lingkup hanya negative/no-credentials. Ini **tidak** membuktikan public-key / user JWT bekerja, CORS origin HTTPS valid, Auth signup disabled, profile RLS via HTTP, alias `@accounts.invalid`, lifecycle admin/guru/siswa, refresh token, Windows bootstrap, atau backup/restore. **M-002 IN PROGRESS / NOT VERIFIED**.

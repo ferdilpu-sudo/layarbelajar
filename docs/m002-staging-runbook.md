@@ -37,3 +37,7 @@ Dengan persetujuan pemilik, siapkan akun sintetis staging dan pengujian end-to-e
 - Kode hosted kedua Edge Functions identik dengan `9330e679`, aktif version 1, JWT verification enabled; 0 Auth users dan 0 profiles pada checkpoint.
 - Jangan menjalankan `db push` otomatis karena hosted schema migration version `20261012154806` tidak sama dengan file Git `20261012060000`. Review histori lebih dulu.
 - **Jangan menganggap manual preflight sudah dijalankan.** Tidak ada HTTPS frontend origin terverifikasi dan izin Auth self-signup hosted belum dicek; isi kedua konfigurasi secara aman sebelum menjalankan workflow manual dan acceptance akun sintetis.
+
+## Public, no-secret staging smoke (13 Oktober 2026)
+
+[GitHub Actions 38334648904](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38334648904) menghasilkan 3 offline tests PASS dan 5 actual no-credential GET/OPTIONS checks PASS untuk endpoint staging. Run `node scripts/staging-public-smoke.mjs` tersedia tanpa environment/secret tambahan; workflow `M-002 Hosted Public Smoke (No Credentials)` menyediakan manual dispatch dan PR trigger **hanya ketika kode/script smoke berubah**. Ini **bukan** preflight penuh dengan approved origin, dan bukan hosted Auth acceptance. GoTrue health tanpa API key menghasilkan HTTP 401; jangan tulis GoTrue health 200.
