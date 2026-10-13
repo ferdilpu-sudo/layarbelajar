@@ -1,6 +1,6 @@
 # M-002 — Hosted Supabase acceptance checklist (owner-controlled)
 
-**Status: PARTIAL HOSTED SETUP / ACCEPTANCE NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
+**Status: hosted public CORS PASS / hosted Auth acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
 
 ## Environment & rollout
 - Use a dedicated staging Supabase project; record region, allowed services and provider quotas **without writing secrets into Git**.
@@ -80,3 +80,10 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - Both `account-admin` and `change-password`: approved origin **`https://layarbelajar.pages.dev`** returned the exact `Access-Control-Allow-Origin` and supported the `authorization` request header; foreign origin `https://untrusted.invalid` explicitly denied, and no-token GET rejected. Auth health without key still returned gateway key-required rather than proof of healthy GoTrue.
 - Runtime secret value itself was never read or printed; the result only demonstrates the **effective CORS behavior** matching the allowed origin. No user authentication/roles, credentialed browser, public signup, session refresh or backup were tested.
 - **M-002 IN PROGRESS / NOT VERIFIED.** Next: secret-scoped read-only GoTrue/anon RLS preflight, then approved synthetic accounts, hosted role/refresh acceptance and Windows owner bootstrap.
+
+## Hosted Auth read-only policy checkpoint — 13 October 2026
+
+- Staging project `qfkjcjzwhewsbblgumco` verified **ACTIVE_HEALTHY**. Read-only SQL: `auth.users=0`, `profiles=0`, `profiles` RLS enabled, anon SELECT grant false, authenticated SELECT true and authenticated INSERT/UPDATE/DELETE false. Security Advisor returned **0 lints**. This did not authenticate with GoTrue.
+- Hosted no-credential CORS proof [run 38356097250](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38356097250) remains **7/7 PASS**, offline **5/5 PASS**.
+- New code-only key-scoped preflight additionally inspects GoTrue `GET /auth/v1/settings` (`disable_signup=true`, `external.email=true`) and hard-pins project and Pages origin. **Hosted preflight execution: NOT RUN**. Run workflow manually after environment public anon JWT and nonsecret variables are configured and PR is merged; record actual run ID here.
+- Full hosted role matrix, user token refresh/revoke, provisioning/cleanup and owner Windows bootstrap are **NOT RUN**. No real users/accounts were created in this increment.
