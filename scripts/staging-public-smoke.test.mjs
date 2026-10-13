@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { runPublicSmoke, STAGING_URL } from './staging-public-smoke.mjs';
+import { runPublicSmoke, STAGING_URL, APPROVED_ORIGIN } from './staging-public-smoke.mjs';
 
 test('public smoke reads only a pinned staging URL using GET and OPTIONS', async () => {
   const calls = [];
@@ -8,11 +8,20 @@ test('public smoke reads only a pinned staging URL using GET and OPTIONS', async
     calls.push({ url, init });
     if (url.endsWith('/auth/v1/health')) return new Response('{}', { status: 200 });
     if (init.method === 'GET') return new Response('{}', { status: 401 });
+    if (init.headers.Origin === APPROVED_ORIGIN) {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': APPROVED_ORIGIN,
+          'Access-Control-Allow-Headers': 'authorization,apikey,content-type',
+        },
+      });
+    }
     return new Response(null, { status: 403 });
   };
   const result = await runPublicSmoke(mockFetch);
-  assert.equal(result.length, 5);
-  assert.equal(calls.length, 5);
+  assert.equal(result.length, 7);
+  assert.equal(calls.length, 7);
   assert.ok(calls.every((call) => call.url.startsWith(STAGING_URL + '/')));
   assert.ok(calls.every((call) => ['GET', 'OPTIONS'].includes(call.init.method)));
   assert.ok(calls.every((call) => call.init.body === undefined));
@@ -30,9 +39,37 @@ test('fails when foreign-origin wildcard CORS is returned', async () => {
     if (url.endsWith('/health')) return new Response('{}', { status: 200 });
     if (init.method === 'GET') return new Response('{}', { status: 401 });
     return new Response(null, {
-      status: 204,
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      status: init.headers.Origin === APPROVED_ORIGIN ? 204 : 403,
+      headers: {
+        'Access-Control-Allow-Origin':
+          init.headers.Origin === APPROVED_ORIGIN ? APPROVED_ORIGIN : '*',
+        'Access-Control-Allow-Headers': 'authorization,apikey,content-type',
+      },
     });
   };
   await assert.rejects(() => runPublicSmoke(mockFetch), /foreign browser origin/);
+});
+
+test('fails closed when an approved staging origin is not configured on the hosted Edge', async () => {
+  const fakeFetch = async (url, init) => {
+    if (url.endsWith('/health')) return new Response('{}', { status: 401 });
+    if (init.method === 'GET') return new Response('{}', { status: 401 });
+    return new Response(null, { status: 403 });
+  };
+  await assert.rejects(() => runPublicSmoke(fakeFetch), /approved-origin OPTIONS HTTP/);
+});
+
+test('fails closed when a CORS response does not permit the authorization header', async () => {
+  const fakeFetch = async (url, init) => {
+    if (url.endsWith('/health')) return new Response('{}', { status: 401 });
+    if (init.method === 'GET') return new Response('{}', { status: 401 });
+    if (init.headers.Origin === APPROVED_ORIGIN) {
+      return new Response(null, {
+        status: 204,
+        headers: { 'Access-Control-Allow-Origin': APPROVED_ORIGIN },
+      });
+    }
+    return new Response(null, { status: 403 });
+  };
+  await assert.rejects(() => runPublicSmoke(fakeFetch), /authorization header missing/);
 });
