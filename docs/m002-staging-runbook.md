@@ -1,11 +1,11 @@
 # M-002 — Staging Supabase, runbook non-mutatif
 
-**Status: STAGING NOT RUN / BLOCKED.** Dokumen ini menyediakan pekerjaan yang siap dijalankan **setelah pemilik menyediakan staging**, bukan bukti environment telah dibuat.
+**Status: STAGING PROJECT + EDGE DEPLOYED / HTTP ACCEPTANCE NOT RUN.** Project `qfkjcjzwhewsbblgumco` sudah aktif; kedua fungsi `account-admin` dan `change-password` ACTIVE version 1, `verify_jwt=true`. Ini belum membuktikan hosted login/CORS. Jangan mengulang deployment hanya karena instruksi prasyarat di bawah.
 
 ## Prasyarat
 
 1. Buat/otorisasi sebuah project **khusus staging** milik pemilik, terpisah dari database produksi dan data siswa asli. Jangan membuat project berbayar atau mengaktifkan billing otomatis. Gunakan hanya akun uji sintetis saat tahap mutatif berikutnya.
-2. Setelah review migrasi, deploy Edge Functions `account-admin` dan `change-password` pada staging dengan `verify_jwt=true`. Konfigurasi `APP_ALLOWED_ORIGINS` di secret Edge berisi **origin HTTPS frontend staging persis**.
+2. **Deploy Edge Functions telah selesai pada 13 Oktober 2026; jangan deploy ulang tanpa perubahan source.** Masih harus konfigurasi `APP_ALLOWED_ORIGINS` pada secret Edge ke **origin HTTPS frontend staging persis**, setelah site staging benar-benar tersedia.
 3. Supabase Hosted Auth: disable pendaftaran publik di pengaturan global, namun biarkan email/password sign-in tersedia untuk akun provisioning. Pastikan alias `@accounts.invalid` kompatibel sebelum memasukkan user nyata.
 4. Di GitHub repository, siapkan **Environment** bernama `staging`, set protection/reviewer yang sesuai dan nilai berikut di Environment (jangan menaruhnya dalam git atau chat):
 
@@ -31,3 +31,9 @@
 Dengan persetujuan pemilik, siapkan akun sintetis staging dan pengujian end-to-end untuk: provisioning admin→guru/siswa, duplikasi, ganti/reset password, akses lintas role, deactivate dan JWT lama, refresh rotation/focus/resume/logout, origin negatif, pemulihan gagal dan rate-limit, serta backup/restore. Uji Windows bootstrap lokal dari terminal pemilik, tanpa mengekspos password. Simpan screenshot/trace yang tidak memuat kredensial; tidak boleh mempublikasikan secret. Reviewer merekam hasil per gate di `docs/m002-hosted-acceptance.md`.
 
 **M-002 tidak boleh dinyatakan Verified dari preflight read-only saja.**
+
+## Evidence deploy / penahan berikutnya (13 Oktober 2026)
+
+- Kode hosted kedua Edge Functions identik dengan `9330e679`, aktif version 1, JWT verification enabled; 0 Auth users dan 0 profiles pada checkpoint.
+- Jangan menjalankan `db push` otomatis karena hosted schema migration version `20261012154806` tidak sama dengan file Git `20261012060000`. Review histori lebih dulu.
+- **Jangan menganggap manual preflight sudah dijalankan.** Tidak ada HTTPS frontend origin terverifikasi dan izin Auth self-signup hosted belum dicek; isi kedua konfigurasi secara aman sebelum menjalankan workflow manual dan acceptance akun sintetis.
