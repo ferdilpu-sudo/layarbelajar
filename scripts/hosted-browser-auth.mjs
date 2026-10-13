@@ -143,8 +143,8 @@ export async function hostedBrowserQa(
       await expect(page).toHaveURL(/\/ganti-password$/);
       // SPA navigation checks that pending users cannot enter admin routes.
       await page.evaluate(() => {
-        history.pushState({}, '', '/admin/akun');
-        dispatchEvent(new PopStateEvent('popstate'));
+        globalThis.history.pushState({}, '', '/admin/akun');
+        globalThis.dispatchEvent(new globalThis.PopStateEvent('popstate'));
       });
       await expect(page).toHaveURL(/\/ganti-password$/);
       const nextPassword = randomBytes(24).toString('base64url') + 'Zz9!';
@@ -154,8 +154,8 @@ export async function hostedBrowserQa(
       await expect(page).toHaveURL(/\/akun$/);
       await expect(page.getByText('Role: ' + expectedRole + '.')).toBeVisible();
       await page.evaluate(() => {
-        history.pushState({}, '', '/admin/akun');
-        dispatchEvent(new PopStateEvent('popstate'));
+        globalThis.history.pushState({}, '', '/admin/akun');
+        globalThis.dispatchEvent(new globalThis.PopStateEvent('popstate'));
       });
       await expect(page).toHaveURL(/\/akun$/);
       const storage = await page.evaluate(() => [localStorage.length, sessionStorage.length]);
