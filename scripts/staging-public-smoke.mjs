@@ -14,7 +14,7 @@ async function request(fetcher, path, method, headers = {}) {
     signal: AbortSignal.timeout(12000),
   });
   if (response.status >= 300 && response.status < 400) {
-    throw new Error('Hosted API redirected unexpectedly.');
+    throw new Error('HTTP redirect from staging endpoint: ' + response.status);
   }
   return response;
 }
@@ -23,7 +23,7 @@ export async function runPublicSmoke(fetcher = fetch) {
   const checks = [];
   const health = await request(fetcher, '/auth/v1/health', 'GET');
   if (health.status !== 200) {
-    throw new Error('Hosted Auth health is not HTTP 200.');
+    throw new Error('Auth health returned HTTP ' + health.status);
   }
   checks.push('auth-health');
 
@@ -31,7 +31,7 @@ export async function runPublicSmoke(fetcher = fetch) {
     const path = '/functions/v1/' + name;
     const denied = await request(fetcher, path, 'GET');
     if (![401, 403].includes(denied.status)) {
-      throw new Error(name + ': missing anonymous authorization denial.');
+      throw new Error(name + ': unauthenticated GET returned HTTP ' + denied.status);
     }
     checks.push(name + '-anonymous-denied');
 
@@ -54,14 +54,20 @@ export async function main() {
     const checks = await runPublicSmoke();
     for (const check of checks) console.log('PASS hosted-public ' + check);
     console.log('HOSTED_PUBLIC_SMOKE_PASS: ' + checks.length + ' non-mutating requests.');
-    console.log('NOT VERIFIED: authorized staging origin, account lifecycle, JWT rotation or RLS user matrix.');
-  } catch {
-    // Never print server bodies, URLs with credentials, or secret material.
-    console.error('HOSTED_PUBLIC_SMOKE_FAILED: Review health, edge JWT guards and CORS gateway.');
+    console.log(
+      'NOT VERIFIED: authorized staging origin, account lifecycle, JWT rotation or RLS user matrix.',
+    );
+  } catch (error) {
+    // Only status/endpoint diagnostics authored here; never log request data or HTTP bodies.
+    const message = error instanceof Error ? error.message : 'Network transport failure.';
+    console.error('HOSTED_PUBLIC_SMOKE_FAILED: ' + message);
     process.exitCode = 1;
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+if (
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1])
+) {
   await main();
 }
