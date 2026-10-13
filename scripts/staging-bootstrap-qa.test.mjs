@@ -23,6 +23,9 @@ function fakeBackend({ existing = false, profileFailure = false } = {}) {
     if (pathname === '/auth/v1/admin/users' && options.method === 'GET') {
       return Response.json({ users: state.users });
     }
+    if (url.includes('/rest/v1/profiles?select=id,role,active,must_change_password')) {
+      return Response.json(state.profile ? [state.profile] : []);
+    }
     if (pathname === '/rest/v1/profiles' && options.method === 'GET') {
       return Response.json(state.profile ? [{ id: uid }] : []);
     }
@@ -39,25 +42,10 @@ function fakeBackend({ existing = false, profileFailure = false } = {}) {
     if (pathname === '/auth/v1/token' && options.method === 'POST') {
       return Response.json({ access_token: 'fixture-session' });
     }
-    if (pathname === '/rest/v1/profiles' && options.method === 'GET') {
-      return Response.json(state.profile ? [{ id: uid }] : []);
-    }
-    if (pathname === '/rest/v1/profiles' && options.method !== 'GET') {
-      return Response.json({}, { status: 403 });
-    }
     if (pathname === '/auth/v1/admin/users/' + uid && options.method === 'DELETE') {
       state.users = [];
       state.profile = null;
       return new Response(null, { status: 204 });
-    }
-    if (pathname === '/rest/v1/profiles' && options.method === 'PATCH') {
-      return Response.json({}, { status: 403 });
-    }
-    if (pathname === '/rest/v1/profiles' && options.method === 'GET') {
-      return Response.json(state.profile ? [state.profile] : []);
-    }
-    if (url.includes('/rest/v1/profiles?select=id,role,active,must_change_password')) {
-      return Response.json(state.profile ? [state.profile] : []);
     }
     return Response.json({ error: 'fixture unexpected' }, { status: 500 });
   };
@@ -123,5 +111,23 @@ test('failed profile creation cleans only test identity', async () => {
   );
   assert.equal(ctx.state.users.length, 0);
   assert.equal(ctx.state.profile, null);
+  assert.equal(ctx.calls.filter((x) => x.startsWith('DELETE ')).length, 1);
+});
+
+test('synthetic Windows bootstrap succeeds and leaves empty staging', async () => {
+  const ctx = fakeBackend();
+  const lines = [];
+  const result = await runStagingBootstrapQa({
+    ...secrets,
+    fetcher: ctx.fetcher,
+    getPassword: () => 'longpasswordAa2!',
+    getConfirmation: () => OWNER_CONFIRMATION,
+    log: (message) => lines.push(message),
+  });
+  assert.equal(result, 4);
+  assert.equal(ctx.state.users.length, 0);
+  assert.equal(ctx.state.profile, null);
+  assert.equal(lines.length, 4);
+  assert.ok(lines.some((line) => line.includes('cleanup-empty-staging')));
   assert.equal(ctx.calls.filter((x) => x.startsWith('DELETE ')).length, 1);
 });
