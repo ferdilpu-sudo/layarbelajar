@@ -1,6 +1,6 @@
 # M-002 — Hosted Supabase acceptance checklist (owner-controlled)
 
-**Status: hosted CORS, read-only Auth/RLS preflight, and synthetic backend Auth lifecycle PASS / browser and operations acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
+**Status: hosted CORS, read-only Auth/RLS preflight, backend synthetic lifecycle 8/8 and Pages browser Auth 9/9 PASS / Windows bootstrap and operations gates NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
 
 ## Environment & rollout
 - Use a dedicated staging Supabase project; record region, allowed services and provider quotas **without writing secrets into Git**.
@@ -113,3 +113,12 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - Separate trusted SQL after execution: `auth.users=0`, `profiles=0`, `lbqa_` prefix 0 in both. Security Advisor returned **0 lints**. No data belonging to real users was introduced. No credential values or JWTs recorded in evidence.
 - **Scope qualification:** this demonstrates API/backend synthetic lifecycle, **not hydrated Cloudflare Pages login**, browser route/UX at 360/768/1280/1920, foreground resume/reload, Windows interactive owner bootstrap, hosted rate limit resilience, hosted backup/restore rehearsal or migration-history reconciliation.
 - **Milestone M-002: IN PROGRESS / NOT VERIFIED.** Next isolated checks: user-visible browser Auth flow on deployed HTTPS frontend with safe ephemeral identities and cleanup; Windows bootstrap/recovery and operations gates. Do not rerun the successful hosted backend acceptance without a concrete reason.
+
+
+## Hosted Pages browser Auth 9/9 PASS + verified cleanup (13 Oktober 2026)
+
+- GitHub Actions [run 38425114268](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38425114268) completed **SUCCESS** on `main` at commit `42110c0cb3e38062b02f8669b9c4da0e52c22716` after successful [Foundation CI 38424722643](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38424722643). Log contains `HOSTED_BROWSER_AUTH_PASS: 9 bounded checks.` for real Chromium against `https://layarbelajar.pages.dev` and staging Supabase ref `qfkjcjzwhewsbblgumco`.
+- Nine named checks PASS: empty hosted Auth/Pages preflight; synthetic admin login/logout on 360, 768, 1280, 1920 px; admin browser UI provision teacher/student; teacher pending-password change and denied admin navigation; student pending-password change and denied admin navigation; synthetic cleanup.
+- **Independent Supabase SQL after completion**: `auth.users=0`, `public.profiles=0`, remaining `lbqa_` users=0 and profiles=0. Security Advisor returned **0 security lints**. No credentials, user tokens, browser traces, video, or screenshots were published.
+- Read-only preflight [38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) 5/5 PASS and separately hosted backend synthetic Auth [38421090025](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38421090025) 8/8 PASS remain valid; **do not repeat** without a specific regression.
+- **M-002 remains IN PROGRESS / NOT VERIFIED.** New remaining gates: owner-run **Windows interactive admin bootstrap** against designated staging using secure terminal and no leaked secrets; reviewed migration-history discrepancy (Git migration `20261012060000` vs hosted history `20261012154806`); staging backup/restore recovery plan or supported rehearsal, rate limit/quota checks and owner signoff. Never run production migration reset or `db push` to resolve drift without audited recovery.

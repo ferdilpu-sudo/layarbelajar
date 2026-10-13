@@ -1,6 +1,6 @@
 # M-002 — Hosted synthetic Auth acceptance (owner-controlled)
 
-**Status: HOSTED 8/8 PASS, cleanup independently verified; browser and operations gates pending.** The earlier [read-only preflight](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) passed five checks. This is a separate, explicitly mutating validation step and must never be triggered by pull requests.
+**Status: HOSTED BACKEND 8/8 PASS and PAGES BROWSER 9/9 PASS, both with independent cleanup; Windows/operations gates pending.** The earlier [read-only preflight](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) passed five checks. This is a separate, explicitly mutating validation step and must never be triggered by pull requests.
 
 ## Target and approval
 
@@ -33,3 +33,8 @@
 - This validates staging GoTrue/Edge/PostgREST API and RLS with disposable identities; no hosted Cloudflare browser UI automation, Windows owner interactive bootstrap, restore/backup or operational limits were included.
 - The original script/workflow remains manual-only and privileged to the staging Environment. Do not put `STAGING_SERVICE_ROLE_KEY` into frontend build settings, public repository variables or chat.
 - **M-002 remains IN PROGRESS.** Move to browser Auth, Windows bootstrap, and operational gates; retain this run as proof rather than creating fresh users without need.
+
+## Subsequent hosted browser proof
+
+- [Browser Auth Chromium run 38425114268](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38425114268) PASS **9/9** on deployed Pages (four viewport sizes, admin UI provisioning, teacher/student password UX and cleanup). Distinct from this API 8/8 suite.
+- Independent SQL returned 0 Auth users and 0 profiles. **M-002 is not yet Verified** pending Windows bootstrap, recovery/quotas review and migration history audit.
