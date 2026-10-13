@@ -40,6 +40,12 @@ test('refuses missing project config and local/nonmatching HTTPS destinations', 
     /BLOCKED/,
   );
 });
+test('missing GitHub staging secret fails closed with actionable and secret-free error', () => {
+  assert.throws(
+    () => validateHostedConfig({ ...settings, STAGING_ANON_KEY: '' }),
+    /GitHub staging Environment secret STAGING_ANON_KEY is missing/,
+  );
+});
 test('refuses service-role JWT and opaque publishable keys', () => {
   assert.throws(
     () => validateHostedConfig({ ...settings, STAGING_ANON_KEY: 'sb_secret_bad' }),
