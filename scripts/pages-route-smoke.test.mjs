@@ -18,7 +18,10 @@ test('GET-only smoke checks deep routes and referenced asset', async () => {
     methods.push(options.method);
     return new Response(
       url.endsWith('.js') ? 'export const example = "' + 'x'.repeat(140) + '";' : html,
-      { status: 200, headers: { 'content-type': url.endsWith('.js') ? 'text/javascript' : 'text/html' } },
+      {
+        status: 200,
+        headers: { 'content-type': url.endsWith('.js') ? 'text/javascript' : 'text/html' },
+      },
     );
   };
   assert.equal((await checkPages(mock)).length, 5);

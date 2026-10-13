@@ -14,7 +14,8 @@ export async function checkPages(fetcher = fetch) {
       cache: 'no-store',
       signal: AbortSignal.timeout(12000),
     });
-    if (response.status !== 200) throw new Error('Route ' + route + ' returned HTTP ' + response.status);
+    if (response.status !== 200)
+      throw new Error('Route ' + route + ' returned HTTP ' + response.status);
     if (!String(response.headers.get('content-type')).includes('text/html')) {
       throw new Error('Route ' + route + ' did not return HTML.');
     }
@@ -24,7 +25,8 @@ export async function checkPages(fetcher = fetch) {
     }
     const asset = html.match(/src="(\/assets\/[^"]+\.js)"/);
     if (!asset) throw new Error('Missing JS asset in ' + route);
-    if (expectedScript && asset[1] !== expectedScript) throw new Error('SPA assets differ by route.');
+    if (expectedScript && asset[1] !== expectedScript)
+      throw new Error('SPA assets differ by route.');
     expectedScript = asset[1];
     reports.push('route ' + route);
   }
