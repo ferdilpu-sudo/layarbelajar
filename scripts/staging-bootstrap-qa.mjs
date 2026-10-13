@@ -9,12 +9,7 @@ function requireSafe(ok, label) {
 }
 
 async function request(cfg, fetcher, path, options = {}) {
-  const {
-    key = cfg.service,
-    token,
-    method = 'GET',
-    body,
-  } = options;
+  const { key = cfg.service, token, method = 'GET', body } = options;
   let response;
   try {
     response = await fetcher(cfg.url + path, {
@@ -34,10 +29,7 @@ async function request(cfg, fetcher, path, options = {}) {
   } catch {
     throw new Error('WINDOWS_BOOTSTRAP_FAILED: Staging API unreachable.');
   }
-  requireSafe(
-    response.status < 300 || response.status >= 400,
-    'Unexpected HTTP redirect.',
-  );
+  requireSafe(response.status < 300 || response.status >= 400, 'Unexpected HTTP redirect.');
   let data = null;
   try {
     data = await response.json();
@@ -80,10 +72,7 @@ export async function runStagingBootstrapQa({
   }
   async function profileList() {
     const result = await call('/rest/v1/profiles?select=id&limit=1');
-    requireSafe(
-      result.ok && Array.isArray(result.data),
-      'Profiles inventory not available.',
-    );
+    requireSafe(result.ok && Array.isArray(result.data), 'Profiles inventory not available.');
     return result.data;
   }
 
@@ -104,9 +93,7 @@ export async function runStagingBootstrapQa({
   // Do not accept credentials from CLI arguments, environment or files.
   const password = await getPassword();
   requireSafe(
-    typeof password === 'string' &&
-      password.length >= 12 &&
-      password.length <= 128,
+    typeof password === 'string' && password.length >= 12 && password.length <= 128,
     'Admin test password must be 12 to 128 characters.',
   );
   requireSafe(
@@ -120,10 +107,7 @@ export async function runStagingBootstrapQa({
       method: 'POST',
       body: { email, password, email_confirm: true },
     });
-    requireSafe(
-      auth.ok && UUID.test(auth.data?.id ?? ''),
-      'Synthetic Auth create failed.',
-    );
+    requireSafe(auth.ok && UUID.test(auth.data?.id ?? ''), 'Synthetic Auth create failed.');
     const id = auth.data.id;
     created.add(id);
 
@@ -150,10 +134,10 @@ export async function runStagingBootstrapQa({
       signedIn.ok && typeof signedIn.data?.access_token === 'string',
       'Synthetic admin login failed.',
     );
-    const own = await call(
-      '/rest/v1/profiles?select=id,role,active,must_change_password',
-      { key: cfg.anon, token: signedIn.data.access_token },
-    );
+    const own = await call('/rest/v1/profiles?select=id,role,active,must_change_password', {
+      key: cfg.anon,
+      token: signedIn.data.access_token,
+    });
     requireSafe(
       own.ok &&
         own.data?.length === 1 &&
