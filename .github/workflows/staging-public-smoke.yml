@@ -1,0 +1,23 @@
+name: M-002 Hosted Public Smoke (No Credentials)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/staging-public-smoke.mjs'
+      - 'scripts/staging-public-smoke.test.mjs'
+      - '.github/workflows/staging-public-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  public-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Offline non-mutation test
+        run: node --test scripts/staging-public-smoke.test.mjs
+      - name: Hosted no-credentials GET/OPTIONS
+        run: node scripts/staging-public-smoke.mjs
