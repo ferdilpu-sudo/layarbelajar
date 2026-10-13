@@ -119,3 +119,9 @@ Proyek belum mempunyai bukti deployment cloud milik pemilik. Untuk mencegah sala
 ## ADR-016 — Staging public-surface smoke tanpa kredensial
 
 Untuk memperoleh bukti HTTP hosted sebelum akun sintetis dan origin frontend tersedia, gunakan pemeriksaan non-mutatif terpisah yang hanya melakukan GET dan OPTIONS ke project staging bernama eksplisit. Tidak ada environment/secret, header Authorization atau operasi penulisan. Workflow dapat dipanggil manual atau saat skrip probe sendiri berubah; **tidak menggantikan** manual protected `staging-preflight.yml` pada ADR-015. HTTP 401 untuk Auth health tanpa key direkam sebagai gateway key-required, **bukan healthy response GoTrue**. Verifikasi kode deployment tidak dianggap cukup untuk TEST-002. Gate user JWT, CORS approved origin dan sesi tetap tertutup hingga diuji nyata.
+
+## ADR-017 — Explicit staging-only Cloudflare Pages build boundary
+
+Cloudflare Pages stays the approved React/Vite host. A distinct staging-only Pages project, linked from GitHub `main`, must use `npm run build:pages:staging` rather than repurposing local builds. Guard pins Supabase ref `qfkjcjzwhewsbblgumco`, enforces separate exact HTTPS app origin, and excludes privileged keys from browser build variables. Existing app Auth code uses `VITE_SUPABASE_PUBLISHABLE_KEY`; current compatibility gate requires a **legacy public anon JWT**, not modern opaque publishable key, until server/browser verification permits a separately documented migration. No additional paid service or third-party account is provisioned by repository changes.
+
+Pages deployment origin is allocated by Cloudflare and **must not be guessed**; no `APP_ALLOWED_ORIGINS` production/staging default is invented. Wildcard `*.pages.dev` is never permitted for staging Edge authorization. Previews may build but are not approved for hosted account operations without their own explicit origin/security test. Compiler/build gate is not hosted application acceptance.

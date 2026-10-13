@@ -41,3 +41,7 @@ Dengan persetujuan pemilik, siapkan akun sintetis staging dan pengujian end-to-e
 ## Public, no-secret staging smoke (13 Oktober 2026)
 
 [GitHub Actions 38334648904](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38334648904) menghasilkan 3 offline tests PASS dan 5 actual no-credential GET/OPTIONS checks PASS untuk endpoint staging. Run `node scripts/staging-public-smoke.mjs` tersedia tanpa environment/secret tambahan; workflow `M-002 Hosted Public Smoke (No Credentials)` menyediakan manual dispatch dan PR trigger **hanya ketika kode/script smoke berubah**. Ini **bukan** preflight penuh dengan approved origin, dan bukan hosted Auth acceptance. GoTrue health tanpa API key menghasilkan HTTP 401; jangan tulis GoTrue health 200.
+
+## Cloudflare HTTPS origin deployment preparation
+
+Cloudflare Pages owner-only setup is described in [docs/m002-cloudflare-pages-staging.md](./m002-cloudflare-pages-staging.md). Use `npm run build:pages:staging` and enter a real verified `VITE_APP_URL` before the production build of the *staging-only Pages site*. Never guess a `*.pages.dev` hostname; setting Edge `APP_ALLOWED_ORIGINS` is deliberately postponed until that hostname is verified. Current HTTP public smoke only proves negative no-key/foreign-Origin guards; **positive CORS remains NOT RUN**.
