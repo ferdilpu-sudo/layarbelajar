@@ -1,6 +1,6 @@
 # M-002 — Staging Supabase, runbook non-mutatif
 
-**Status: hosted positive/negative CORS PASS; key-scoped hosted Auth policy/RLS preflight NOT RUN.** Project `qfkjcjzwhewsbblgumco` sudah aktif; kedua fungsi `account-admin` dan `change-password` ACTIVE version 1, `verify_jwt=true`. Ini belum membuktikan hosted login/CORS. Jangan mengulang deployment hanya karena instruksi prasyarat di bawah.
+**Status: hosted CORS and key-scoped read-only Auth/RLS preflight PASS; synthetic account acceptance NOT RUN.** Project `qfkjcjzwhewsbblgumco` sudah aktif; kedua fungsi `account-admin` dan `change-password` ACTIVE version 1, `verify_jwt=true`. Ini belum membuktikan hosted login/CORS. Jangan mengulang deployment hanya karena instruksi prasyarat di bawah.
 
 ## Prasyarat
 
@@ -53,3 +53,10 @@ Cloudflare Pages owner-only setup is described in [docs/m002-cloudflare-pages-st
 - Runs [38370408344](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38370408344) dan [38409543139](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38409543139) **FAIL sebelum koneksi hosted**: seluruh tiga vars dan secret GitHub terdeteksi kosong pada runner, `STAGING_PREFLIGHT_BLOCKED: Required staging configuration is missing`.
 - Perbaikan berikutnya mematok tiga nilai publik pada job GitHub Actions dan mempertahankan **satu secret** `STAGING_ANON_KEY` dari environment `staging`. Jika belum tersedia, error spesifik muncul tanpa mencetak nilai secret.
 - **Gate hosted Auth policy/RLS tetap NOT RUN**, bukan FAIL dari Supabase; validasi ulang melalui workflow pada `main` setelah perubahan merged dan secret pemilik tersedia. Tidak ada mutasi akun/data.
+
+
+## Latest hosted preflight evidence — 13 October 2026
+
+- [GitHub Actions run 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) on `main` commit `6ccb3a82`: **SUCCESS**; `STAGING_READONLY_PASS: 5 non-mutating checks.` Health, signup policy, anonymous profile restriction, and both Edge CORS checks passed live on dedicated staging.
+- GitHub `staging` environment resolved the legacy public anon secret; no service-role key was supplied. Direct read-only SQL after the run confirmed `auth.users=0`, `public.profiles=0`. Do not rerun CORS/preflight just to advance; preserve the successful evidence.
+- **Next:** hosted synthetic-account acceptance is **NOT RUN**. Before any mutation, follow the owner-controlled acceptance protocol in [m002-hosted-acceptance.md](./m002-hosted-acceptance.md). This read-only workflow must remain non-mutating; full M-002 remains NOT VERIFIED.
