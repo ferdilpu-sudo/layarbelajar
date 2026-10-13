@@ -18,6 +18,10 @@ jobs:
         run: npm ci
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
+      - name: Temporary formatting diff (PR #12 only)
+        run: |
+          npx prettier --write scripts/pages-route-smoke.mjs scripts/pages-route-smoke.test.mjs
+          git diff -- scripts/pages-route-smoke.mjs scripts/pages-route-smoke.test.mjs
       - name: Format check
         run: npm run format:check
       - name: Lint

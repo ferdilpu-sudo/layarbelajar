@@ -1,6 +1,6 @@
 # M-002 — Cloudflare Pages staging frontend (owner connection required)
 
-**Status: NOT DEPLOYED / HTTPS origin NOT VERIFIED — 13 October 2026.** Supabase staging exists; this runbook does **not** assert a Cloudflare project exists.
+**Status: OWNER CONFIRMED PAGES PUBLISHED — 13 October 2026. Auth acceptance still NOT RUN.** Stable HTTPS origin: `https://layarbelajar.pages.dev`.
 
 ## Scope
 
@@ -30,7 +30,7 @@ The Pages slug and resulting `*.pages.dev` URL **cannot be assumed** before Clou
 
 The guard `scripts/verify-staging-pages-build.mjs` **fails closed** for missing/wrong origin, wrong Supabase project, insecure URL, invalid/privileged public JWT, or suspicious `VITE_` variable names. It validates JWT *metadata shape* only, not cryptographic signature or actual hosted authentication; successful build is **not** proof the key works.
 
-The repository's `public/_redirects` already supports client-side routes. Confirm browser refresh on `/login` and restricted admin paths after deployment. Avoid wildcard origin allowances for dynamic branch preview URLs; use only the confirmed stable HTTPS site origin for hosted Edge Function CORS.
+Cloudflare ignored the original `public/_redirects` rule as an infinite loop. The file is removed; the documented native SPA fallback handles deep links when there is no root `404.html`. GET-only route smoke PASS is not browser login/refresh acceptance. Avoid wildcard origin allowances for dynamic branch preview URLs; use only the confirmed stable HTTPS site origin for hosted Edge Function CORS.
 
 ## After Pages HTTPS is verified
 
@@ -43,3 +43,7 @@ The repository's `public/_redirects` already supports client-side routes. Confir
 **NO CLOUD HOSTING DEPLOYMENT PERFORMED BY THIS COMMIT.** A passing offline Pages guard and local CI do not close TEST-002.
 
 References: [Cloudflare React on Pages](https://developers.cloudflare.com/pages/framework-guides/deploy-a-react-site/), [Cloudflare build settings](https://developers.cloudflare.com/pages/configuration/build-configuration/), [Supabase auth/Edge env](https://supabase.com/docs/guides/functions/secrets).
+
+## First Pages publication and deep-link gate
+
+Owner log: commit `9508e852`, `STAGING_PAGES_BUILD_PASS`, `Your site was deployed!`; Cloudflare warned `/* /index.html 200` infinite loop, ignored. GET-only smoke [38354227693](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38354227693) passed 3/3 offline and 5/5 public HTML/JS checks at the published hostname. Run the manual `M-002 Cloudflare Pages Read-Only Routes` Action again **after** PR #12's fixed source deploys to Pages; verify the warning disappears. Do not mark full hosted Auth ready without approved `APP_ALLOWED_ORIGINS`, public signup settings, and synthetic-account acceptance.

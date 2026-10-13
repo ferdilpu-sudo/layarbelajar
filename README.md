@@ -198,3 +198,7 @@ Supabase Free staging `qfkjcjzwhewsbblgumco` aktif, database `profiles` kosong/R
 ### Cloudflare Pages — M-002 staging deployment preparation (13 October 2026)
 
 The repository now provides `npm run build:pages:staging` and the offline `npm run test:pages:staging`. The build gate strictly checks the intended **Free staging Supabase ref**, HTTPS frontend origin, and `anon` JWT role; `npm run build` remains unchanged for local/CI. See [Cloudflare Pages staging runbook](./docs/m002-cloudflare-pages-staging.md). **No Cloudflare Pages site or HTTPS origin has been verified or deployed yet.** Hosted positive CORS and full Auth remain NOT RUN; M-002 In Progress.
+
+### Cloudflare Pages staging published — 13 October 2026
+
+The owner supplied successful deployment logs for https://layarbelajar.pages.dev. A GET-only GitHub Actions [route smoke](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38354227693) verifies four public direct HTML routes and the bundled JS. The rejected infinite-loop rule in `public/_redirects` has been removed in PR #12: Pages provides native SPA fallback without a top-level `404.html`. **Actual hosted Auth/CORS/lifecycle is still NOT RUN; M-002 remains In Progress.**
