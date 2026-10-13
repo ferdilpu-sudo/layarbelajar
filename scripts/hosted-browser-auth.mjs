@@ -222,6 +222,7 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
       await expect(page.getByRole('heading', { name: 'Kelola akun' })).toBeVisible();
       teacherPassword = await provisionInBrowser(page, 'teacher');
       studentPassword = await provisionInBrowser(page, 'student');
+      await page.getByRole('link', { name: /Kembali ke akun/ }).click();
       await logout(page);
     });
     log('PASS hosted-browser admin-ui-provision-teacher-student');
@@ -265,7 +266,7 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
     }
   }
   if (error) throw error;
-  return WIDTHS.length + 4;
+  return WIDTHS.length + 5;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
