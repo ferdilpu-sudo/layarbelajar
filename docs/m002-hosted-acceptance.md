@@ -1,6 +1,6 @@
 # M-002 — Hosted Supabase acceptance checklist (owner-controlled)
 
-**Status: hosted public CORS PASS / hosted Auth acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
+**Status: hosted public CORS and key-scoped read-only Auth/RLS preflight PASS / mutating hosted Auth acceptance NOT RUN** — dedicated Free staging exists; profiles foundation is present and both Edge Functions are deployed, but hosted authentication/CORS/session acceptance remains unverified. This checklist does not authorize deploying personal student data.
 
 ## Environment & rollout
 - Use a dedicated staging Supabase project; record region, allowed services and provider quotas **without writing secrets into Git**.
@@ -87,3 +87,20 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - Hosted no-credential CORS proof [run 38356097250](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38356097250) remains **7/7 PASS**, offline **5/5 PASS**.
 - New code-only key-scoped preflight additionally inspects GoTrue `GET /auth/v1/settings` (`disable_signup=true`, `external.email=true`) and hard-pins project and Pages origin. **Hosted preflight execution: NOT RUN**. Run workflow manually after environment public anon JWT and nonsecret variables are configured and PR is merged; record actual run ID here.
 - Full hosted role matrix, user token refresh/revoke, provisioning/cleanup and owner Windows bootstrap are **NOT RUN**. No real users/accounts were created in this increment.
+
+
+## Hosted key-scoped read-only preflight — VERIFIED 13 October 2026
+
+- [GitHub Actions run 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) on `main`, commit `6ccb3a82fc3a8d8d90eaf51bfb1116b40d9bd78d`: **SUCCESS**, `STAGING_READONLY_PASS: 5 non-mutating checks.` Project `qfkjcjzwhewsbblgumco`, app origin `https://layarbelajar.pages.dev`.
+- Hosted HTTP `auth-health`: **PASS**; hosted Auth `disable_signup=true`, `external.email=true`: **PASS**; public anon REST `profiles` reads do not reveal profiles: **PASS**; both hosted Edge Functions allow exact approved origin and reject foreign origins: **PASS**. A successful read-only policy check is not a proof of role-bound authenticated access.
+- After-run direct read-only SQL inspection: `auth.users=0`, `public.profiles=0`. The workflow sends **GET/OPTIONS only** and uses a legacy public anon key without passwords, real/synthetic account creation, service-role key, or DB writes.
+- Earlier blocked runs [38409543139](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38409543139) (missing GitHub environment values) and [38412059485](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38412059485) (hosted signup still enabled) are superseded by this live passing run. Do not silently erase failure history.
+- **Hosted authenticated acceptance: NOT RUN. M-002: IN PROGRESS.** Prior to using personal data, perform only scoped synthetic staging role, lifecycle, refresh and revocation tests; verify safe setup/rollback/cleanup and document backup/restore, rate-limits and Windows bootstrap separately.
+
+### Next hosted gate — synthetic acceptance (proposed, not executed)
+
+1. Authorize a controlled mutation window on the **staging-only** project; precheck empty synthetic namespace, Auth settings, function deployment, current migration drift and recovery/cleanup route. Never write to production or reset the hosted DB.
+2. Create only disposable synthetic identities with secure, ephemeral credentials; avoid logging passwords, JWTs, cookies, traces or screenshots containing secrets; do not persist tokens in browser storage.
+3. Verify admin create/list/reset/deactivate, teacher/student mandatory password change, wrong credentials, forbidden cross-role access, RLS denial, expired/rotated access and refresh sessions, and deactivation of pre-existing JWTs. Mark each independently PASS/FAIL/NOT RUN.
+4. Verify idempotent cleanup of test users and profiles; if cleanup fails, **halt and reconcile** rather than deleting unknown users. Record project ref, Git SHA, CI run URL, account counts only, and owner approval.
+5. Keep Windows interactive bootstrap, restoration drill and operational/quotas review as separate gates; passing synthetic auth does not by itself complete M-002.
