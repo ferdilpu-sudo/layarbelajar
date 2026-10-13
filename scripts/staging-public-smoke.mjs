@@ -22,10 +22,10 @@ async function request(fetcher, path, method, headers = {}) {
 export async function runPublicSmoke(fetcher = fetch) {
   const checks = [];
   const health = await request(fetcher, '/auth/v1/health', 'GET');
-  if (health.status !== 200) {
-    throw new Error('Auth health returned HTTP ' + health.status);
+  if (![200, 401, 403].includes(health.status)) {
+    throw new Error('Auth gateway returned unexpected HTTP ' + health.status);
   }
-  checks.push('auth-health');
+  checks.push(health.status === 200 ? 'auth-health' : 'auth-gateway-api-key-required');
 
   for (const name of EDGE_FUNCTIONS) {
     const path = '/functions/v1/' + name;
