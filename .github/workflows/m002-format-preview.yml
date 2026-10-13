@@ -1,0 +1,23 @@
+name: Temporary M-002 Format Preview
+on:
+  pull_request:
+    paths:
+      - 'scripts/staging-preflight.mjs'
+      - 'scripts/staging-preflight.test.mjs'
+      - '.github/workflows/m002-format-preview.yml'
+permissions:
+  contents: read
+jobs:
+  show-prettier-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Print formatter patch (working tree only)
+        run: |
+          npx prettier --write scripts/staging-preflight.mjs scripts/staging-preflight.test.mjs
+          git --no-pager diff -- scripts/staging-preflight.mjs scripts/staging-preflight.test.mjs
