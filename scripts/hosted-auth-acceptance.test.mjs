@@ -63,3 +63,42 @@ test('refuses unsafe signup policy before any mutation', async () => {
   await assert.rejects(() => runHostedAcceptance(env, fakeFetch, () => {}), /Signup policy/);
   assert.deepEqual(calls, ['GET', 'GET']);
 });
+
+test('cleans up the exact synthetic admin when profile provisioning fails', async () => {
+  const adminId = '123e4567-e89b-42d3-a456-426614174000';
+  let users = [];
+  const calls = [];
+  const fakeFetch = async (url, options) => {
+    const pathname = new URL(url).pathname;
+    calls.push({ method: options.method, pathname });
+    if (pathname === '/auth/v1/health') return Response.json({});
+    if (pathname === '/auth/v1/settings') {
+      return Response.json({ disable_signup: true, external: { email: true } });
+    }
+    if (pathname === '/auth/v1/admin/users' && options.method === 'GET') {
+      return Response.json({ users });
+    }
+    if (pathname === '/rest/v1/profiles' && options.method === 'GET') {
+      return Response.json([]);
+    }
+    if (pathname === '/auth/v1/admin/users' && options.method === 'POST') {
+      const posted = JSON.parse(options.body);
+      users = [{ id: adminId, email: posted.email }];
+      return Response.json({ id: adminId }, { status: 201 });
+    }
+    if (pathname === '/rest/v1/profiles' && options.method === 'POST') {
+      return Response.json({ error: 'simulated' }, { status: 403 });
+    }
+    if (pathname === '/auth/v1/admin/users/' + adminId && options.method === 'DELETE') {
+      users = [];
+      return new Response(null, { status: 204 });
+    }
+    return Response.json({ error: 'unexpected' }, { status: 500 });
+  };
+  await assert.rejects(
+    () => runHostedAcceptance(env, fakeFetch, () => {}),
+    /Synthetic admin profile creation failed/,
+  );
+  assert.equal(users.length, 0);
+  assert.equal(calls.filter((call) => call.method === 'DELETE').length, 1);
+});
