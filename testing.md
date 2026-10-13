@@ -176,3 +176,10 @@ Supabase project staging `qfkjcjzwhewsbblgumco` dalam Free plan sudah ACTIVE_HEA
 - Pemilik menyatakan `APP_ALLOWED_ORIGINS=https://layarbelajar.pages.dev` telah disimpan pada Supabase staging. Klaim ini belum dianggap runtime PASS tanpa request nyata.
 - `scripts/staging-public-smoke.mjs` diperluas dari negative-only menjadi **7 GET/OPTIONS probes**: Auth gateway no-key, dua Edge no-token denial, dua exact approved-origin CORS OPTIONS (termasuk `authorization` header), dua foreign-origin explicit denial. Hanya project Supabase `qfkjcjzwhewsbblgumco`, tanpa key/password/body/POST.
 - Jalankan CI live `M-002 Hosted Public Smoke (No Credentials)` dan catat hasil pada PR. PASS tidak membuktikan login, refresh-token rotation, real browser, Auth signup disabled atau RLS cross-role. **M-002 In Progress**.
+
+### Live approved-origin OPTIONS result — PASS (13 October 2026)
+
+- GitHub Actions [M-002 Hosted Public Smoke 38356097250](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38356097250): **5/5 offline tests PASS; 7/7 actual hosted read-only probes PASS** against project `qfkjcjzwhewsbblgumco`.
+- Both `account-admin` and `change-password`: approved origin **`https://layarbelajar.pages.dev`** returned the exact `Access-Control-Allow-Origin` and supported the `authorization` request header; foreign origin `https://untrusted.invalid` explicitly denied, and no-token GET rejected. Auth health without key still returned gateway key-required rather than proof of healthy GoTrue.
+- Runtime secret value itself was never read or printed; the result only demonstrates the **effective CORS behavior** matching the allowed origin. No user authentication/roles, credentialed browser, public signup, session refresh or backup were tested.
+- **M-002 IN PROGRESS / NOT VERIFIED.** Next: secret-scoped read-only GoTrue/anon RLS preflight, then approved synthetic accounts, hosted role/refresh acceptance and Windows owner bootstrap.
