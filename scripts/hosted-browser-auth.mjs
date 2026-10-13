@@ -19,7 +19,10 @@ export function browserConfig(env) {
   return validateConfig({ ...env, STAGING_ACCEPTANCE_CONFIRM: 'RUN_SYNTHETIC_STAGING_ONLY' });
 }
 
-export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chromium, log = console.log } = {}) {
+export async function hostedBrowserQa(
+  env,
+  { fetcher = fetch, browserType = chromium, log = console.log } = {},
+) {
   const cfg = browserConfig(env);
   const nonce = randomBytes(5).toString('hex');
   const names = Object.fromEntries(
@@ -64,7 +67,10 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
 
   async function users() {
     const response = await api('/auth/v1/admin/users?per_page=10&page=1');
-    check(response.ok && Array.isArray(response.data?.users), 'Read-only Auth inventory unavailable.');
+    check(
+      response.ok && Array.isArray(response.data?.users),
+      'Read-only Auth inventory unavailable.',
+    );
     return response.data.users;
   }
 
@@ -122,7 +128,10 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
     await expect(oneTime).toBeVisible();
     const password = await oneTime.innerText();
     const id = await page.getByRole('textbox', { name: 'ID akun' }).inputValue();
-    check(typeof password === 'string' && password.length >= 12 && UUID.test(id), 'UI provision response invalid.');
+    check(
+      typeof password === 'string' && password.length >= 12 && UUID.test(id),
+      'UI provision response invalid.',
+    );
     createdIds.add(id);
     await page.getByRole('button', { name: 'Sembunyikan' }).click();
     return password;
@@ -159,7 +168,12 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
   // Exactly bounded staging preflight; must be completed before any user mutation.
   check((await api('/auth/v1/health', { service: false })).status === 200, 'GoTrue health failed.');
   const settings = await api('/auth/v1/settings', { service: false });
-  check(settings.ok && settings.data?.disable_signup === true && settings.data?.external?.email === true, 'Auth policy unsafe.');
+  check(
+    settings.ok &&
+      settings.data?.disable_signup === true &&
+      settings.data?.external?.email === true,
+    'Auth policy unsafe.',
+  );
   check((await users()).length === 0, 'Staging has pre-existing Auth users.');
   check((await profiles()).length === 0, 'Staging has pre-existing profiles.');
   let frontend;
@@ -172,7 +186,10 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
   } catch {
     throw new Error('HOSTED_BROWSER_QA_FAILED: Pages login route unreachable.');
   }
-  check(frontend.status === 200 && (frontend.headers.get('content-type') || '').includes('text/html'), 'Pages login route unavailable.');
+  check(
+    frontend.status === 200 && (frontend.headers.get('content-type') || '').includes('text/html'),
+    'Pages login route unavailable.',
+  );
   log('PASS hosted-browser preflight-healthy-empty-staging-pages');
 
   try {
@@ -206,7 +223,9 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
       await withPage(width, async (page) => {
         await login(page, names.admin, adminPassword);
         await expect(page).toHaveURL(/\/akun$/);
-        await expect(page.getByRole('heading', { name: 'Halo, ' + names.admin.username })).toBeVisible();
+        await expect(
+          page.getByRole('heading', { name: 'Halo, ' + names.admin.username }),
+        ).toBeVisible();
         await expect(page.getByRole('link', { name: 'Kelola akun guru dan siswa' })).toBeVisible();
         await logout(page);
       });
@@ -249,7 +268,10 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
         // Recover identities created even when the UI response was lost.
         const found = await users();
         for (const user of found) {
-          if (Object.values(names).some((item) => item.email === user.email) && UUID.test(user.id ?? '')) {
+          if (
+            Object.values(names).some((item) => item.email === user.email) &&
+            UUID.test(user.id ?? '')
+          ) {
             createdIds.add(user.id);
           }
         }
@@ -261,7 +283,9 @@ export async function hostedBrowserQa(env, { fetcher = fetch, browserType = chro
         check((await profiles()).length === 0, 'Profiles remain after cleanup.');
         log('PASS hosted-browser cleanup-no-remaining-users');
       } catch {
-        error = new Error('HOSTED_BROWSER_QA_CLEANUP_BLOCKED: Inspect only lbqa_ identities on staging before any retry.');
+        error = new Error(
+          'HOSTED_BROWSER_QA_CLEANUP_BLOCKED: Inspect only lbqa_ identities on staging before any retry.',
+        );
       }
     }
   }
