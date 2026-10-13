@@ -1,0 +1,31 @@
+name: Temporary M-002 Windows QA Formatter
+on:
+  pull_request:
+    paths:
+      - 'scripts/staging-bootstrap-qa.mjs'
+      - 'scripts/staging-bootstrap-qa.test.mjs'
+      - '.github/workflows/m002-windows-format-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    if: github.head_ref == 'feat/m002-windows-staging-bootstrap-qa'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Emit formatted public-only code (no keys, no network mutations)
+        run: |
+          npx prettier --write scripts/staging-bootstrap-qa.mjs scripts/staging-bootstrap-qa.test.mjs
+          echo M002_WIN_FORMAT_BEGIN
+          base64 -w0 scripts/staging-bootstrap-qa.mjs
+          echo
+          echo M002_WIN_FORMAT_END
+          echo M002_WIN_TEST_FORMAT_BEGIN
+          base64 -w0 scripts/staging-bootstrap-qa.test.mjs
+          echo
+          echo M002_WIN_TEST_FORMAT_END
