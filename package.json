@@ -25,6 +25,7 @@
     "test:e2e:auth:local": "node scripts/test-local-auth-browser.mjs",
     "test:staging-preflight": "node --test scripts/staging-preflight.test.mjs",
     "test:hosted-auth-contract": "node --test scripts/hosted-auth-acceptance.test.mjs",
+    "test:hosted-browser-contract": "node --test scripts/hosted-browser-auth.test.mjs",
     "build:pages:staging": "node scripts/verify-staging-pages-build.mjs && npm run build",
     "test:pages:staging": "node --test scripts/verify-staging-pages-build.test.mjs"
   },

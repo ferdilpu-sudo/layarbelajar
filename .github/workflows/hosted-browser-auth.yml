@@ -1,0 +1,38 @@
+name: M-002 Hosted Pages Browser Auth QA
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_HOSTED_BROWSER_QA (creates/deletes 3 disposable staging users)'
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: m002-staging-synthetic-acceptance
+  cancel-in-progress: false
+jobs:
+  hosted-browser:
+    name: Hosted Pages Chromium Auth, cleanup mandatory
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'RUN_HOSTED_BROWSER_QA' }}
+    runs-on: ubuntu-24.04
+    environment: staging
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Hosted HTTPS browser Auth and cleanup (no artifacts, tokens or screenshots)
+        env:
+          STAGING_BROWSER_CONFIRM: ${{ inputs.confirmation }}
+          STAGING_PROJECT_REF: qfkjcjzwhewsbblgumco
+          STAGING_SUPABASE_URL: https://qfkjcjzwhewsbblgumco.supabase.co
+          STAGING_APP_ORIGIN: https://layarbelajar.pages.dev
+          STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+          STAGING_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: node scripts/hosted-browser-auth.mjs
