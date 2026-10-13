@@ -28,6 +28,8 @@ jobs:
         run: npm run test:unit
       - name: Staging preflight contract (offline; no cloud calls)
         run: npm run test:staging-preflight
+      - name: Hosted synthetic acceptance contract (offline; no credentials)
+        run: npm run test:hosted-auth-contract
       - name: Cloudflare Pages staging environment guard (offline)
         run: npm run test:pages:staging
       - name: Design token contrast
