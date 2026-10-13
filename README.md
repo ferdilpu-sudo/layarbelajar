@@ -194,3 +194,7 @@ Preflight `npm run test:staging-preflight` adalah **unit contract offline** tanp
 ### Staging deployment checkpoint — 13 Oktober 2026
 
 Supabase Free staging `qfkjcjzwhewsbblgumco` aktif, database `profiles` kosong/RLS enabled dan Edge `account-admin` serta `change-password` **ACTIVE v1, verify_jwt=true**; deployed code matches main commit `9330e679`. **Ini baru bukti deployment, bukan hosted HTTP Auth/CORS/E2E PASS**. Lihat [hosted acceptance](./docs/m002-hosted-acceptance.md) dan [staging runbook](./docs/m002-staging-runbook.md) sebelum mengisi origins/keys di lingkungan pemilik. Migration history drift `20261012154806` vs Git `20261012060000` tetap harus diaudit. M-002 In Progress; jangan mulai M-003 dengan asumsi Auth hosted Verified.
+
+### Cloudflare Pages — M-002 staging deployment preparation (13 October 2026)
+
+The repository now provides `npm run build:pages:staging` and the offline `npm run test:pages:staging`. The build gate strictly checks the intended **Free staging Supabase ref**, HTTPS frontend origin, and `anon` JWT role; `npm run build` remains unchanged for local/CI. See [Cloudflare Pages staging runbook](./docs/m002-cloudflare-pages-staging.md). **No Cloudflare Pages site or HTTPS origin has been verified or deployed yet.** Hosted positive CORS and full Auth remain NOT RUN; M-002 In Progress.

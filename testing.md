@@ -157,3 +157,9 @@ Supabase project staging `qfkjcjzwhewsbblgumco` dalam Free plan sudah ACTIVE_HEA
 - Script `scripts/staging-public-smoke.mjs` dan workflow `.github/workflows/staging-public-smoke.yml` melakukan request **GET / OPTIONS saja**, tanpa key, bearer, password, cookies, body, pembuatan akun maupun data siswa. Target dibatasi eksplisit ke staging `qfkjcjzwhewsbblgumco`, tidak ada network mutable/proyek produksi.
 - GitHub Actions [run 38334648904](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38334648904) **PASS 3/3 offline unit + 5/5 actual hosted read-only requests**: Auth health tanpa key mengembalikan **HTTP 401** (gateway memerlukan API key, **bukan bukti GoTrue health 200**); `account-admin` dan `change-password` menolak anonim; `Origin: https://untrusted.invalid` tidak menerima CORS `Access-Control-Allow-Origin` yang cocok/wildcard.
 - Lingkup hanya negative/no-credentials. Ini **tidak** membuktikan public-key / user JWT bekerja, CORS origin HTTPS valid, Auth signup disabled, profile RLS via HTTP, alias `@accounts.invalid`, lifecycle admin/guru/siswa, refresh token, Windows bootstrap, atau backup/restore. **M-002 IN PROGRESS / NOT VERIFIED**.
+
+## M-002 Pages staging build guard — scope and evidence
+
+- Offline `npm run test:pages:staging` checks staging-only URL, required HTTPS frontend origin, service-role JWT rejection, malformed public JWT rejection, `sb_publishable_` incompatibility guard, and refusal of sensitive `VITE_` names. The test uses **synthetic JWT payloads** with no real key and makes no HTTP requests.
+- `npm run build:pages:staging` invokes the same guard before the real production Vite build. The ordinary `npm run build` still supports local/fixture CI without a hosted environment.
+- **Not the same as** hosted Cloudflare deployment / production build with actual Pages env, positive/negative CORS, remote Auth or browser E2E. Record runtime PASS only after verified Pages URL and live test results.

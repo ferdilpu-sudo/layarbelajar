@@ -23,7 +23,9 @@
     "supabase:start": "supabase start",
     "supabase:reset:local": "supabase db reset --local",
     "test:e2e:auth:local": "node scripts/test-local-auth-browser.mjs",
-    "test:staging-preflight": "node --test scripts/staging-preflight.test.mjs"
+    "test:staging-preflight": "node --test scripts/staging-preflight.test.mjs",
+    "build:pages:staging": "node scripts/verify-staging-pages-build.mjs && npm run build",
+    "test:pages:staging": "node --test scripts/verify-staging-pages-build.test.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.0",
