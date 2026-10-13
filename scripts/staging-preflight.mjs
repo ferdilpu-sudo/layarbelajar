@@ -2,6 +2,9 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const UNTRUSTED_ORIGIN = 'https://untrusted.invalid';
+// Match the confirmed staging infrastructure; reject accidental production probes.
+const EXPECTED_STAGING_REF = 'qfkjcjzwhewsbblgumco';
+const EXPECTED_APP_ORIGIN = 'https://layarbelajar.pages.dev';
 const EDGE_NAMES = ['account-admin', 'change-password'];
 
 function fail(reason) {
@@ -16,7 +19,9 @@ export function validateHostedConfig(env) {
   if (![urlString, ref, originString, key].every((v) => typeof v === 'string' && v.length)) {
     fail('Required staging configuration is missing.');
   }
-  if (!/^[a-z0-9]{8,40}$/.test(ref)) fail('Invalid staging project ref.');
+  if (!/^[a-z0-9]{8,40}$/.test(ref) || ref !== EXPECTED_STAGING_REF) {
+    fail('Project ref does not match the dedicated LayarBelajar staging project.');
+  }
   let url;
   let origin;
   try {
@@ -48,7 +53,8 @@ export function validateHostedConfig(env) {
     origin.search ||
     origin.hash ||
     origin.origin === url.origin ||
-    origin.hostname.endsWith('.supabase.co')
+    origin.hostname.endsWith('.supabase.co') ||
+    origin.origin !== EXPECTED_APP_ORIGIN
   ) {
     fail('Frontend origin must be a separate exact HTTPS site origin.');
   }
@@ -94,6 +100,25 @@ export async function checkHostedStaging(config, fetcher = fetch) {
   });
   if (health.status !== 200) fail('Auth health check failed with HTTP ' + health.status + '.');
   reports.push('auth-health');
+
+  // GoTrue publicly exposes these policy flags via GET /settings. Assert that
+  // self-registration is disabled but email/password sign-in stays enabled.
+  const settings = await limitedFetch(fetcher, config.url + '/auth/v1/settings', {
+    method: 'GET',
+    headers,
+  });
+  if (settings.status !== 200) {
+    fail('Auth settings check failed with HTTP ' + settings.status + '.');
+  }
+  let policy;
+  try {
+    policy = await settings.json();
+  } catch {
+    fail('Invalid Auth settings response.');
+  }
+  if (policy?.disable_signup !== true) fail('Hosted Auth must disable public signup.');
+  if (policy?.external?.email !== true) fail('Hosted Auth email login provider is disabled.');
+  reports.push('auth-policy');
 
   // This GET is read-only. Public grants/RLS must never reveal any profile rows.
   const profiles = await limitedFetch(fetcher, config.url + '/rest/v1/profiles?select=id&limit=1', {

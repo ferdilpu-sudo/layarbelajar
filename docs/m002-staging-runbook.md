@@ -1,6 +1,6 @@
 # M-002 — Staging Supabase, runbook non-mutatif
 
-**Status: STAGING PROJECT + EDGE DEPLOYED / HTTP ACCEPTANCE NOT RUN.** Project `qfkjcjzwhewsbblgumco` sudah aktif; kedua fungsi `account-admin` dan `change-password` ACTIVE version 1, `verify_jwt=true`. Ini belum membuktikan hosted login/CORS. Jangan mengulang deployment hanya karena instruksi prasyarat di bawah.
+**Status: hosted positive/negative CORS PASS; key-scoped hosted Auth policy/RLS preflight NOT RUN.** Project `qfkjcjzwhewsbblgumco` sudah aktif; kedua fungsi `account-admin` dan `change-password` ACTIVE version 1, `verify_jwt=true`. Ini belum membuktikan hosted login/CORS. Jangan mengulang deployment hanya karena instruksi prasyarat di bawah.
 
 ## Prasyarat
 
@@ -11,9 +11,9 @@
 
 | Nama | Jenis | Contoh/batas |
 |---|---|---|
-| `STAGING_PROJECT_REF` | Variable | Reference Supabase staging, huruf/angka 8–40 |
-| `STAGING_SUPABASE_URL` | Variable | `https://<ref>.supabase.co` (tanpa slash tambahan) |
-| `STAGING_APP_ORIGIN` | Variable | Origin HTTPS frontend staging, tanpa path/query |
+| `STAGING_PROJECT_REF` | Variable | `qfkjcjzwhewsbblgumco` (exact-only) |
+| `STAGING_SUPABASE_URL` | Variable | `https://qfkjcjzwhewsbblgumco.supabase.co` |
+| `STAGING_APP_ORIGIN` | Variable | `https://layarbelajar.pages.dev` (exact-only) |
 | `STAGING_ANON_KEY` | Secret | JWT legacy dengan role `anon` (BUKAN service_role) |
 
 **Tidak** menambahkan `SUPABASE_SERVICE_ROLE_KEY` sebagai secret workflow preflight. Workflow `.github/workflows/staging-preflight.yml` hanya menggunakan nilai di atas, tanpa identitas guru/siswa, password, atau token admin.
@@ -22,7 +22,7 @@
 
 - GitHub → Actions → **M-002 Hosted Staging Preflight (Read Only)** → Run workflow pada `main`. Jika repo belum memiliki environment/values, job akan gagal dengan `STAGING_PREFLIGHT_BLOCKED`; ini **bukan** bukti hosted PASS.
 - Script `node scripts/staging-preflight.mjs` memvalidasi ref/HTTPS, tipe public anon JWT, `GET /auth/v1/health`, GET profil anonim (harus 403 atau `[]`), serta OPTIONS CORS origin disetujui dan origin asing untuk dua Edge Functions. Tidak menggunakan POST/PATCH/DELETE, tidak membuat akun, tidak melakukan deployment atau reset data.
-- Harus terlihat **4 PASS** dan `STAGING_READONLY_PASS`. Jika CORS/anon RLS gagal, jangan lanjut operasi akun di hosted sampai konfigurasi diperbaiki dan gate diulang.
+- Harus terlihat **5 PASS** dan `STAGING_READONLY_PASS`. Jika CORS/anon RLS gagal, jangan lanjut operasi akun di hosted sampai konfigurasi diperbaiki dan gate diulang.
 - Kunci modern `sb_publishable_...` **sengaja ditolak** gate awal: aplikasi sekarang menggunakan bearer anon JWT untuk Edge `verify_jwt=true`. Migrasi ke model key baru harus dibuktikan melalui tes integrasi terpisah; jangan menggunakan service_role key sebagai pengganti.
 - Unit `npm run test:staging-preflight` berjalan offline dan **tidak membuktikan staging tersambung**.
 
@@ -45,3 +45,10 @@ Dengan persetujuan pemilik, siapkan akun sintetis staging dan pengujian end-to-e
 ## Cloudflare HTTPS origin deployment preparation
 
 Cloudflare Pages owner-only setup is described in [docs/m002-cloudflare-pages-staging.md](./m002-cloudflare-pages-staging.md). Use `npm run build:pages:staging` and enter a real verified `VITE_APP_URL` before the production build of the *staging-only Pages site*. Never guess a `*.pages.dev` hostname; setting Edge `APP_ALLOWED_ORIGINS` is deliberately postponed until that hostname is verified. Current HTTP public smoke only proves negative no-key/foreign-Origin guards; **positive CORS remains NOT RUN**.
+
+## Next gate after confirmed CORS — 13 October 2026
+
+- [Live smoke 38356097250](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38356097250) **5/5 offline PASS and 7/7 hosted HTTP PASS**. Exact Pages Origin is now proven effective in Edge CORS.
+- Direct staging SQL read-only inspection: `auth.users=0`, `profiles=0`, RLS enabled, anon SELECT not granted, authenticated SELECT granted, authenticated writes denied; security advisors report **0 lints**. This is database metadata, **not** proof of hosted HTTP access with anon JWT.
+- Enhanced `scripts/staging-preflight.mjs` requires the confirmed staging ref/origin, legacy public **anon** JWT from the GitHub `staging` Environment, GET GoTrue `/health` and `/settings` (must be `disable_signup=true`, `external.email=true`), GET anonymous `profiles` and OPTIONS CORS for both functions. **All requests remain GET/OPTIONS without user creation or passwords.**
+- This enhanced workflow is **NOT RUN on hosted** until GitHub Environment configuration is present and the owner manually dispatches it from merged `main`. Never paste an API key into Git, issue comments or chat. Any policy mismatch blocks subsequent synthetic account tests. M-002 remains IN PROGRESS.
