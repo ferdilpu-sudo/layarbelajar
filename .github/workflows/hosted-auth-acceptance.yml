@@ -14,7 +14,7 @@ concurrency:
 jobs:
   hosted-synthetic:
     name: Three synthetic accounts, lifecycle checks, cleanup
-    if: ${{ inputs.confirmation == 'RUN_SYNTHETIC_STAGING_ONLY' }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'RUN_SYNTHETIC_STAGING_ONLY' }}
     environment: staging
     runs-on: ubuntu-24.04
     timeout-minutes: 10
