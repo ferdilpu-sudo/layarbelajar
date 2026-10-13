@@ -31,11 +31,12 @@ test('refuses missing project config and local/nonmatching HTTPS destinations', 
     );
   }
   assert.throws(
-    () => validateHostedConfig({
-      ...settings,
-      STAGING_PROJECT_REF: 'anotherstagingproject',
-      STAGING_SUPABASE_URL: 'https://anotherstagingproject.supabase.co',
-    }),
+    () =>
+      validateHostedConfig({
+        ...settings,
+        STAGING_PROJECT_REF: 'anotherstagingproject',
+        STAGING_SUPABASE_URL: 'https://anotherstagingproject.supabase.co',
+      }),
     /BLOCKED/,
   );
 });
@@ -131,9 +132,7 @@ test('blocks unsafe Auth settings and unhealthy GoTrue', async () => {
     [{ disable_signup: true }, /email login provider/],
   ]) {
     const fetcher = async (url) =>
-      url.includes('/auth/v1/health')
-        ? new Response('{}', { status: 200 })
-        : Response.json(body);
+      url.includes('/auth/v1/health') ? new Response('{}', { status: 200 }) : Response.json(body);
     await assert.rejects(() => checkHostedStaging(config, fetcher), expected);
   }
   await assert.rejects(
