@@ -365,7 +365,7 @@ export async function runHostedAcceptance(env, fetcher = fetch, log = console.lo
   }
   if (firstError) throw firstError;
   requireResult(completed, 'Acceptance did not complete.');
-  return 7;
+  return 8;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
