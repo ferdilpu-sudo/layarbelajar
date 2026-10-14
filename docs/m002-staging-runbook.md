@@ -60,3 +60,7 @@ Cloudflare Pages owner-only setup is described in [docs/m002-cloudflare-pages-st
 - [GitHub Actions run 38413892433](https://github.com/ferdilpu-sudo/layarbelajar/actions/runs/38413892433) on `main` commit `6ccb3a82`: **SUCCESS**; `STAGING_READONLY_PASS: 5 non-mutating checks.` Health, signup policy, anonymous profile restriction, and both Edge CORS checks passed live on dedicated staging.
 - GitHub `staging` environment resolved the legacy public anon secret; no service-role key was supplied. Direct read-only SQL after the run confirmed `auth.users=0`, `public.profiles=0`. Do not rerun CORS/preflight just to advance; preserve the successful evidence.
 - **Next:** hosted synthetic-account acceptance is **NOT RUN**. Before any mutation, follow the owner-controlled acceptance protocol in [m002-hosted-acceptance.md](./m002-hosted-acceptance.md). This read-only workflow must remain non-mutating; full M-002 remains NOT VERIFIED.
+
+## 14 Oktober 2026 — Pembaruan khusus histori migrasi
+
+Audit read-only menemukan teks migrasi hosted dan Git sama persis (2317 karakter), meskipun versi histori berbeda. PR baru menyelaraskan **nama file sumber**, bukan histori database; lihat [runbook rekonsiliasi](./m002-migration-history-reconciliation.md). Catatan `db push` di atas adalah guard historis yang **tetap berlaku** sampai CI, merge dan pengecekan read-only `supabase migration list` membuktikan versi LOCAL/REMOTE cocok. Jangan melakukan `migration repair` ataupun `db push` untuk menutup discrepancy tanpa audit baru.
