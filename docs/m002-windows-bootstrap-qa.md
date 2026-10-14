@@ -1,6 +1,6 @@
 # M-002 — Windows staging synthetic admin bootstrap QA
 
-**Status: Windows owner runtime NOT RUN.** This is distinct from the local-only `bootstrap-admin.mjs`. Hosted Auth browser 9/9 and backend 8/8 have passed; this specifically checks a **real interactive Windows terminal**, never creates a permanent owner/admin.
+**Status: Windows owner runtime OPERATOR-REPORTED PASS (14 October 2026); independent read-only hosted cleanup verification PASS.** This is distinct from the local-only `bootstrap-admin.mjs`. Hosted Auth browser 9/9 and backend 8/8 have passed; this specifically checks a **real interactive Windows terminal**, never creates a permanent owner/admin.
 
 ## Safe host and scope
 
@@ -43,3 +43,21 @@ The test creates at most **one** synthetic account using `lbqa_win_<random>_admi
 - Send **only** the final PASS/FAIL marker, Node version and commit SHA to the reviewer, never JWTs or a screenshot of hidden prompts. Reviewer independently checks `auth.users=0`, `public.profiles=0`, no `lbqa_win_` identities, and records the checkpoint in `plan.md`.
 - The legacy local script `npm run bootstrap:admin` remains loopback-only. Do not remove its local URL guard or repurpose it for hosted staging.
 - This covers Windows terminal input + synthetic hosted bootstrap and cleanup, **not** the permanent owner credential ceremony, database backup/restore, quota/rate-limits or unresolved hosted migration version mismatch. **M-002 remains IN PROGRESS / NOT VERIFIED.**
+
+
+## 14 Oktober 2026 — Owner Windows runtime report
+
+Operator supplied these secret-free terminal lines:
+
+```text
+PASS windows-bootstrap admin-created
+PASS windows-bootstrap admin-login-and-profile
+PASS windows-bootstrap cleanup-empty-staging
+WINDOWS_STAGING_BOOTSTRAP_PASS: 4 bounded checks.
+```
+
+The stand-alone `PASS windows-bootstrap preflight-empty-staging` line was not included in the excerpt, but the final 4-check completion marker was provided. Neither the Node version nor the checkout commit SHA has been supplied for the terminal run. Do not invent these details.
+
+Independent reviewer **read-only** Supabase staging checks on 14 October confirmed Auth users **0**, profiles **0**, `lbqa_win_%` Auth accounts **0**, all `lbqa_%` Auth accounts **0**, and Security Advisor **0 security findings**. No backup, restore, production owner/admin, or new account was created by these reviewer checks.
+
+**Windows synthetic bootstrap gate: PASS on operator evidence with verified empty-state cleanup; environment evidence (Node version + checkout SHA) still missing.** Next: [M-002 operations readiness](./m002-operations-readiness.md). M-002 stays **IN PROGRESS / NOT VERIFIED** until the remaining independent operational gates and owner signoff.
