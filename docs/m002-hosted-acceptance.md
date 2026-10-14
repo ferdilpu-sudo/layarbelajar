@@ -128,3 +128,10 @@ Runbook `docs/m002-staging-runbook.md` menyediakan manual, **read-only** GitHub 
 - Read-only database migration-history statement `20261012154806` was compared directly against Git file `20261012060000_profiles_foundation.sql`: **exact 2317-character SQL equality**, with schema/RLS/grants/helper spot checks also matching. Staging remains empty and Security Advisor has zero findings.
 - A source-only Git rename aligns the migration filename to `20261012154806_profiles_foundation.sql`; see [migration reconciliation runbook](./m002-migration-history-reconciliation.md). Prior statements describing a pending timestamp discrepancy are **historical evidence**, not a recommendation to edit remote history.
 - Until that PR is merged and a read-only `supabase migration list` independently confirms LOCAL/REMOTE agreement, deployment automation is still blocked. No hosted DB mutation was used to reconcile the source. Windows owner runtime and backup/restore and operating limits are still **NOT VERIFIED**. M-002 **IN PROGRESS**.
+
+## 14 Oktober 2026 — Windows synthetic bootstrap PASS, operations outstanding
+
+- Operator-reported terminal completion `WINDOWS_STAGING_BOOTSTRAP_PASS: 4 bounded checks.` with admin-created, admin-login-and-profile and cleanup PASS lines. Independent read-only SQL verified `auth.users=0`, `profiles=0`, `lbqa_win_%=0`, `lbqa_%=0`, and security lints=0. Windows Node version + checkout SHA remain unreported; do not invent them. See [Windows QA runbook](./m002-windows-bootstrap-qa.md).
+- Migration-source rename [PR #22](https://github.com/ferdilpu-sudo/layarbelajar/pull/22) was merged (CI/Backend PASS), and remote history matches the renamed version; CLI-linked `supabase migration list` is still NOT RUN.
+- New [operational/readiness runbook](./m002-operations-readiness.md) covers secure Supabase Free logical backup exports, **isolated local** restore rehearsal, measured capacities and effective rate limits. These gates are **NOT RUN**, not silently upgraded by the Windows QA PASS.
+- **M-002 IN PROGRESS / NOT VERIFIED** until restore, quotas/rate review, migration history CLI confirmation and owner signoff.
